@@ -1,22 +1,12 @@
 import React from 'react';
-import { toast } from '../common/CustomToast'; // Make sure path is correct
-import { useNavigate } from 'react-router-dom';
-import { useAuth } from '../../contexts/AuthContext';
+// Removed specific imports like toast, useNavigate, useAuth, BookingModal
+// as they are handled by CourtsPage now for modal logic
 
-function CourtCard({ court }) {
-  const navigate = useNavigate();
-  const { isLoggedIn } = useAuth();
+function CourtCard({ court, onBookNowClick }) { // Receive onBookNowClick prop
 
+  // This function now simply triggers the handler passed from CourtsPage
   const handleBookNow = () => {
-    if (!isLoggedIn) {
-      toast.info('Please log in to book a court.');
-      navigate('/login');
-    } else {
-      // This will open the booking modal later
-      toast.success(`Booking form for ${court.name} (Type: ${court.type}) would open here.`);
-      // For now, let's just log it
-      console.log(`Open booking modal for court: ${court.name}`);
-    }
+    onBookNowClick(court); // Pass the specific court data up to CourtsPage
   };
 
   return (
@@ -38,12 +28,14 @@ function CourtCard({ court }) {
             {court.description}
         </p>
         <button
-          onClick={handleBookNow}
+          onClick={handleBookNow} // This button now calls the prop from CourtsPage
           className="mt-auto bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded-md transition duration-300 ease-in-out focus:outline-none focus:ring-2 focus:ring-blue-500"
         >
           Book Now
         </button>
       </div>
+
+      {/* IMPORTANT: BookingModal IS NOT RENDERED HERE ANYMORE. It's in CourtsPage.jsx */}
     </div>
   );
 }

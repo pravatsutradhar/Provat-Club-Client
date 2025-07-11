@@ -2,11 +2,21 @@ import React, { useState, useEffect } from 'react';
 import { useCourts } from '../hooks/useCourts';
 import CourtCard from '../components/courts/CourtCard';
 import { toast } from '../components/common/CustomToast';
+import { useNavigate } from 'react-router-dom';
+import { useAuth } from '../contexts/AuthContext';
+import BookingModal from '../components/courts/BookingModal';
 
 function CourtsPage() {
   const [currentPage, setCurrentPage] = useState(1);
-  const [itemsPerPage, setItemsPerPage] = useState(6); // Default for card format
-  const [viewMode, setViewMode] = useState('card'); // 'card' or 'table'
+  const [itemsPerPage, setItemsPerPage] = useState(6);
+  const [viewMode, setViewMode] = useState('card');
+
+  // State for Booking Modal
+  const [isBookingModalOpen, setIsBookingModalOpen] = useState(false);
+  const [selectedCourtForBooking, setSelectedCourtForBooking] = useState(null);
+
+  const navigate = useNavigate();
+  const { isLoggedIn } = useAuth(); // Crucial for checking login status
 
   // Fetch courts using the custom hook with current page and limit
   const { data, isLoading, isError, error, isFetching } = useCourts(currentPage, itemsPerPage);
@@ -30,11 +40,27 @@ function CourtsPage() {
 
   const handleViewModeChange = (mode) => {
     setViewMode(mode);
-    setItemsPerPage(mode === 'card' ? 6 : 10); // Adjust items per page based on view mode
+    setItemsPerPage(mode === 'card' ? 6 : 10); // As per requirements
     setCurrentPage(1); // Reset to first page on view mode change
   };
 
-  if (isLoading && !isFetching) { // Show full loading screen only on initial load
+  // Unified function to open the booking modal
+  const handleOpenBookingModal = (court) => {
+    if (!isLoggedIn) { // Check login status here
+      toast.info('Please log in to book a court.');
+      navigate('/login');
+    } else {
+      setSelectedCourtForBooking(court);
+      setIsBookingModalOpen(true);
+    }
+  };
+
+  const handleCloseBookingModal = () => {
+    setIsBookingModalOpen(false);
+    setSelectedCourtForBooking(null); // Clear selected court when modal closes
+  };
+
+  if (isLoading && !isFetching) {
     return (
       <div className="flex justify-center items-center h-[calc(100vh-150px)] text-xl font-semibold">
         Loading courts...
@@ -96,7 +122,11 @@ function CourtsPage() {
           {viewMode === 'card' && (
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
               {courts.map((court) => (
-                <CourtCard key={court._id} court={court} />
+                <CourtCard
+                  key={court._id}
+                  court={court}
+                  onBookNowClick={handleOpenBookingModal} // Pass the handler
+                />
               ))}
             </div>
           )}
@@ -134,15 +164,7 @@ function CourtsPage() {
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
                         <button
-                          onClick={() => {
-                            if (!isLoggedIn) {
-                                toast.info('Please log in to book a court.');
-                                navigate('/login');
-                            } else {
-                                toast.success(`Booking form for ${court.name} (Table) would open here.`);
-                                console.log(`Open booking modal for court: ${court.name} (Table View)`);
-                            }
-                          }}
+                          onClick={() => handleOpenBookingModal(court)} // Direct call to the unified handler
                           className="text-blue-600 hover:text-blue-900 transition duration-200"
                         >
                           Book Now
@@ -155,6 +177,15 @@ function CourtsPage() {
             </div>
           )}
         </>
+      )}
+
+      {/* Render the single Booking Modal here, controlled by state in CourtsPage */}
+      {selectedCourtForBooking && ( // Only render if a court is selected
+        <BookingModal
+          isOpen={isBookingModalOpen}
+          onRequestClose={handleCloseBookingModal}
+          court={selectedCourtForBooking} // Pass the dynamically selected court
+        />
       )}
     </div>
   );
