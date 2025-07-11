@@ -8,7 +8,7 @@ function AboutSection() {
         <div className="grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
           <div className="md:order-2">
             <img
-              src="https://images.unsplash.com/photo-1587311746765-a864d36e7ec5?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
+              src="https://cdn.pixabay.com/photo/2022/04/10/16/41/lawyer-7123798_1280.jpg"
               alt="Club Interior"
               className="rounded-lg shadow-xl"
             />

@@ -3,16 +3,17 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import UsersPage from './pages/UsersPage';
 import LoginPage from './pages/LoginPage';
 import RegisterPage from './pages/RegisterPage';
-import HomePage from './pages/HomePage'; // Import HomePage
+import HomePage from './pages/HomePage';
+import CourtsPage from './pages/CourtsPage'; // Import CourtsPage
 import { useAuth } from './contexts/AuthContext';
 
 // Components
 import Navbar from './components/common/Navbar';
-import Footer from './components/common/Footer'; // Import Footer component
+import Footer from './components/common/Footer';
 
 const queryClient = new QueryClient();
 
-// Placeholder Dashboard Components (will be replaced later)
+// Placeholder Dashboard Components
 const UserDashboardPlaceholder = () => <div className="p-8 text-center text-2xl font-bold min-h-[calc(100vh-200px)] flex items-center justify-center">User Dashboard (Coming Soon!)</div>;
 const MemberDashboardPlaceholder = () => <div className="p-8 text-center text-2xl font-bold min-h-[calc(100vh-200px)] flex items-center justify-center">Member Dashboard (Coming Soon!)</div>;
 const AdminDashboardPlaceholder = () => <div className="p-8 text-center text-2xl font-bold min-h-[calc(100vh-200px)] flex items-center justify-center">Admin Dashboard (Coming Soon!)</div>;
@@ -32,12 +33,12 @@ function App() {
   return (
     <QueryClientProvider client={queryClient}>
       <Router>
-        <div className="flex flex-col min-h-screen"> {/* Flex container for sticky footer */}
+        <div className="flex flex-col min-h-screen">
           <Navbar />
-          <main className="flex-grow"> {/* Main content area grows to push footer down */}
+          <main className="flex-grow">
             <Routes>
-              <Route path="/" element={<HomePage />} /> {/* Set HomePage as the default */}
-              <Route path="/courts" element={<div className="p-8 text-center text-2xl min-h-[calc(100vh-200px)] flex items-center justify-center">Courts Page (Coming Soon!)</div>} />
+              <Route path="/" element={<HomePage />} />
+              <Route path="/courts" element={<CourtsPage />} /> {/* Render CourtsPage here */}
               <Route path="/users" element={<UsersPage />} />
               <Route path="/login" element={<LoginPage />} />
               <Route path="/register" element={<RegisterPage />} />
@@ -50,7 +51,7 @@ function App() {
               {/* Other routes will go here */}
             </Routes>
           </main>
-          <Footer /> {/* Place Footer here */}
+          <Footer />
         </div>
       </Router>
     </QueryClientProvider>

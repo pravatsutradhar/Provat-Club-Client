@@ -41,7 +41,7 @@ function LocationSection() {
           <div>
             {/* Static Map Image Placeholder */}
             <img
-              src="https://via.placeholder.com/600x400?text=Map+of+Our+Location" // Replace with a real map embed or image later
+              src="https://cdn.pixabay.com/photo/2022/04/10/16/41/lawyer-7123798_1280.jpg" // Replace with a real map embed or image later
               alt="Club Location Map"
               className="w-full h-auto rounded-lg shadow-xl"
             />

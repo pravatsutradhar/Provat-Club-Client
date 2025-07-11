@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from 'react';
 
 const images = [
-  'https://images.unsplash.com/photo-1596541223130-5d31a735b12a?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D', // Example club image
-  'https://images.unsplash.com/photo-1541334200-a178e0785750?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D', // Example courts image
-  'https://images.unsplash.com/photo-1517436073-2e06a72e817a?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D', // Example activities image
+  'https://cdn.pixabay.com/photo/2022/04/10/16/41/lawyer-7123798_1280.jpg', // Example club image
+  'https://cdn.pixabay.com/photo/2022/04/10/16/41/lawyer-7123798_1280.jpg', // Example courts image
+  'https://cdn.pixabay.com/photo/2022/04/10/16/41/lawyer-7123798_1280.jpg', // Example activities image
 ];
 
 function HeroBanner() {
