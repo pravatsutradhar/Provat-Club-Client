@@ -1,14 +1,25 @@
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import UsersPage from './pages/UsersPage';
-import LoginPage from './pages/LoginPage'; // Import LoginPage
-import RegisterPage from './pages/RegisterPage'; // Import RegisterPage
-import { useAuth } from './contexts/AuthContext'; // Import useAuth to check loading state
+import LoginPage from './pages/LoginPage';
+import RegisterPage from './pages/RegisterPage';
+import HomePage from './pages/HomePage'; // Import HomePage
+import { useAuth } from './contexts/AuthContext';
+
+// Components
+import Navbar from './components/common/Navbar';
+import Footer from './components/common/Footer'; // Import Footer component
 
 const queryClient = new QueryClient();
 
+// Placeholder Dashboard Components (will be replaced later)
+const UserDashboardPlaceholder = () => <div className="p-8 text-center text-2xl font-bold min-h-[calc(100vh-200px)] flex items-center justify-center">User Dashboard (Coming Soon!)</div>;
+const MemberDashboardPlaceholder = () => <div className="p-8 text-center text-2xl font-bold min-h-[calc(100vh-200px)] flex items-center justify-center">Member Dashboard (Coming Soon!)</div>;
+const AdminDashboardPlaceholder = () => <div className="p-8 text-center text-2xl font-bold min-h-[calc(100vh-200px)] flex items-center justify-center">Admin Dashboard (Coming Soon!)</div>;
+
+
 function App() {
-  const { loading: authLoading } = useAuth(); // Get auth loading state
+  const { loading: authLoading } = useAuth();
 
   if (authLoading) {
     return (
@@ -21,13 +32,26 @@ function App() {
   return (
     <QueryClientProvider client={queryClient}>
       <Router>
-        <Routes>
-          <Route path="/" element={<div>Home Page (Placeholder)</div>} />
-          <Route path="/users" element={<UsersPage />} />
-          <Route path="/login" element={<LoginPage />} /> {/* Add Login Route */}
-          <Route path="/register" element={<RegisterPage />} /> {/* Add Register Route */}
-          {/* Other routes will go here */}
-        </Routes>
+        <div className="flex flex-col min-h-screen"> {/* Flex container for sticky footer */}
+          <Navbar />
+          <main className="flex-grow"> {/* Main content area grows to push footer down */}
+            <Routes>
+              <Route path="/" element={<HomePage />} /> {/* Set HomePage as the default */}
+              <Route path="/courts" element={<div className="p-8 text-center text-2xl min-h-[calc(100vh-200px)] flex items-center justify-center">Courts Page (Coming Soon!)</div>} />
+              <Route path="/users" element={<UsersPage />} />
+              <Route path="/login" element={<LoginPage />} />
+              <Route path="/register" element={<RegisterPage />} />
+
+              {/* Dashboard Placeholders (will become private routes later) */}
+              <Route path="/user/dashboard" element={<UserDashboardPlaceholder />} />
+              <Route path="/member/dashboard" element={<MemberDashboardPlaceholder />} />
+              <Route path="/admin/dashboard" element={<AdminDashboardPlaceholder />} />
+
+              {/* Other routes will go here */}
+            </Routes>
+          </main>
+          <Footer /> {/* Place Footer here */}
+        </div>
       </Router>
     </QueryClientProvider>
   );
