@@ -50,11 +50,11 @@ export const useUpdateBookingStatus = () => {
     mutationFn: updateBookingStatusRequest,
     onSuccess: (data) => {
       toast.success(data.message || 'Booking status updated successfully!');
-      queryClient.invalidateQueries(['adminBookingRequests']); // Invalidate requests list
-      queryClient.invalidateQueries(['myBookings']); // Invalidate user's general bookings
-      queryClient.invalidateQueries(['approvedBookings']); // If it moves to approved
-      queryClient.invalidateQueries(['confirmedBookings']); // If it moves to confirmed
-      queryClient.invalidateQueries(['userProfile']); // User might become member
+      queryClient.invalidateQueries(['adminBookingRequests']);
+      queryClient.invalidateQueries(['myBookings']);
+      queryClient.invalidateQueries(['approvedBookings']);
+      queryClient.invalidateQueries(['confirmedBookings']);
+      queryClient.invalidateQueries(['userProfile']);
     },
     onError: (error) => {
       const errorMessage = error.response?.data?.message || 'Failed to update booking status.';
@@ -82,11 +82,8 @@ export const useAdminConfirmedBookings = () => {
 };
 
 // --- Admin Manage Users/Members ---
-// Re-use useUsers for all users, but ensure it's protected in the component/route if not already
-// const { useUsers } from './useUsers'; (already exists)
-
 const fetchAllUsersAdmin = async () => {
-  const { data } = await api.get('/users'); // This endpoint should be admin protected in backend
+  const { data } = await api.get('/users');
   return data.data;
 };
 
@@ -103,7 +100,8 @@ export const useAllUsersAdmin = () => {
 };
 
 const deleteUserRequest = async (userId) => {
-  const { data } = await api.delete(`/users/${userId}`); // Need this endpoint in user routes
+  // Assuming you'll add a DELETE /api/users/:id endpoint for admin
+  const { data } = await api.delete(`/users/${userId}`);
   return data;
 };
 
@@ -114,7 +112,7 @@ export const useDeleteUser = () => {
     onSuccess: (data) => {
       toast.success(data.message || 'User deleted successfully!');
       queryClient.invalidateQueries(['allUsersAdmin']);
-      queryClient.invalidateQueries(['adminDashboardStats']); // Stats might change
+      queryClient.invalidateQueries(['adminDashboardStats']);
     },
     onError: (error) => {
       const errorMessage = error.response?.data?.message || 'Failed to delete user.';
@@ -123,10 +121,8 @@ export const useDeleteUser = () => {
   });
 };
 
-// --- Admin Manage Courts ---
-// Re-use useCourts for fetching, but need admin specific mutations
-// const { useCourts } from './useCourts'; (already exists)
 
+// --- Admin Manage Courts ---
 const addCourtRequest = async (courtData) => {
   const { data } = await api.post('/courts', courtData);
   return data;
@@ -138,8 +134,8 @@ export const useAddCourt = () => {
     mutationFn: addCourtRequest,
     onSuccess: (data) => {
       toast.success(data.message || 'Court added successfully!');
-      queryClient.invalidateQueries(['courts']); // Invalidate public court list
-      queryClient.invalidateQueries(['adminDashboardStats']); // Stats might change
+      queryClient.invalidateQueries(['courts']);
+      queryClient.invalidateQueries(['adminDashboardStats']);
     },
     onError: (error) => {
       const errorMessage = error.response?.data?.message || 'Failed to add court.';
@@ -180,7 +176,7 @@ export const useDeleteCourt = () => {
     onSuccess: (data) => {
       toast.success(data.message || 'Court deleted successfully!');
       queryClient.invalidateQueries(['courts']);
-      queryClient.invalidateQueries(['adminDashboardStats']); // Stats might change
+      queryClient.invalidateQueries(['adminDashboardStats']);
     },
     onError: (error) => {
       const errorMessage = error.response?.data?.message || 'Failed to delete court.';
@@ -191,7 +187,7 @@ export const useDeleteCourt = () => {
 
 // --- Admin Manage Coupons ---
 const fetchAllCoupons = async () => {
-  const { data } = await api.get('/coupons'); // Admin endpoint
+  const { data } = await api.get('/coupons');
   return data.data;
 };
 
@@ -269,8 +265,6 @@ export const useDeleteCoupon = () => {
 
 
 // --- Announcements (General use, but admin also manages) ---
-// This is the public facing one, admin has a separate one for all
-// export const useAnnouncements = () => { ... } (already exists in useUserDashboard or shared)
 const fetchAnnouncements = async () => {
     const { data } = await api.get('/announcements');
     return data.data;
@@ -305,7 +299,9 @@ export const useAllAnnouncementsAdmin = () => {
 };
 
 const createAnnouncementRequest = async (announcementData) => {
-    const { data } = await api.post('/announcements', announcementData);
+    // --- FIX APPLIED HERE ---
+    // Changed endpoint from '/announcements' to '/announcements/admin'
+    const { data } = await api.post('/announcements/admin', announcementData);
     return data;
 };
 
@@ -315,8 +311,8 @@ export const useCreateAnnouncement = () => {
         mutationFn: createAnnouncementRequest,
         onSuccess: (data) => {
             toast.success(data.message || 'Announcement created successfully!');
-            queryClient.invalidateQueries(['announcements']); // Invalidate public list
-            queryClient.invalidateQueries(['allAnnouncementsAdmin']); // Invalidate admin list
+            queryClient.invalidateQueries(['announcements']);
+            queryClient.invalidateQueries(['allAnnouncementsAdmin']);
         },
         onError: (error) => {
             const errorMessage = error.response?.data?.message || 'Failed to create announcement.';

@@ -17,7 +17,7 @@ import RegisterPage from './pages/RegisterPage';
 // Dashboard Layouts
 import UserDashboard from './pages/UserDashboard';
 import MemberDashboard from './pages/MemberDashboard';
-import AdminDashboard from './pages/AdminDashboard'; // Import AdminDashboard
+import AdminDashboard from './pages/AdminDashboard';
 
 
 // Nested Dashboard Components (Shared & Admin Specific)
@@ -26,13 +26,18 @@ import UserPendingBookings from './components/dashboard/UserPendingBookings';
 import MemberApprovedBookings from './components/dashboard/MemberApprovedBookings';
 import MemberConfirmedBookings from './components/dashboard/MemberConfirmedBookings';
 import MemberPaymentHistory from './components/dashboard/MemberPaymentHistory';
-import AnnouncementsList from './components/dashboard/AnnouncementsList';
+import AnnouncementsList from './components/dashboard/AnnouncementsList'; // General announcements list for users/members
 
 import AdminProfile from './components/dashboard/AdminProfile';
 import AdminDashboardOverview from './components/dashboard/AdminDashboardOverview';
-import AdminManageBookingApprovals from './components/dashboard/AdminManageBookingApprovals'; // New Import
-import AdminAllUsers from './components/dashboard/AdminAllUsers'; // New Import
-import AdminManageMembers from './components/dashboard/AdminManageMembers'; // New Import
+import AdminManageBookingApprovals from './components/dashboard/AdminManageBookingApprovals';
+import AdminAllUsers from './components/dashboard/AdminAllUsers';
+import AdminManageMembers from './components/dashboard/AdminManageMembers';
+import AdminManageCourts from './components/dashboard/AdminManageCourts'; // New Import
+import AdminManageAllBookings from './components/dashboard/AdminManageAllBookings'; // New Import
+import AdminManageCoupons from './components/dashboard/AdminManageCoupons'; // New Import
+import AdminManageAnnouncements from './components/dashboard/AdminManageAnnouncements'; // New Import (Admin's CRUD Announcements)
+
 
 // Payment Page
 import PaymentPage from './pages/PaymentPage';
@@ -98,11 +103,14 @@ function App() {
                   <Route index element={<AdminDashboardOverview />} />
                   <Route path="profile" element={<AdminProfile />} />
                   <Route path="overview" element={<AdminDashboardOverview />} />
-                  <Route path="manage-bookings-approval" element={<AdminManageBookingApprovals />} /> {/* New Route */}
-                  <Route path="manage-members" element={<AdminManageMembers />} /> {/* New Route */}
-                  <Route path="all-users" element={<AdminAllUsers />} /> {/* New Route */}
-                  <Route path="announcements" element={<AnnouncementsList />} />
-                  {/* Other admin routes will go here in subsequent steps */}
+                  <Route path="manage-bookings-approval" element={<AdminManageBookingApprovals />} />
+                  <Route path="manage-members" element={<AdminManageMembers />} />
+                  <Route path="all-users" element={<AdminAllUsers />} />
+                  <Route path="manage-courts" element={<AdminManageCourts />} /> {/* New Route */}
+                  <Route path="manage-all-bookings" element={<AdminManageAllBookings />} /> {/* New Route */}
+                  <Route path="manage-coupons" element={<AdminManageCoupons />} /> {/* New Route */}
+                  <Route path="make-announcement" element={<AdminManageAnnouncements />} /> {/* New Route (Admin's CRUD) */}
+                  <Route path="announcements" element={<AnnouncementsList />} /> {/* Re-use general announcements list, distinct from admin management one */}
                 </Route>
               </Route>
             </Routes>
