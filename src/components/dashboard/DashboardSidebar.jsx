@@ -1,7 +1,7 @@
 import React from 'react';
 import { NavLink } from 'react-router-dom';
 import { useAuth } from '../../contexts/AuthContext';
-import { FaUser, FaClipboardList, FaBullhorn, FaCreditCard, FaHistory, FaUsers, FaDumbbell, FaTicketAlt } from 'react-icons/fa';
+import { FaUser, FaClipboardList, FaBullhorn, FaCreditCard, FaHistory, FaUsers, FaDumbbell, FaTicketAlt, FaChartBar, FaUserShield, FaCalendarCheck } from 'react-icons/fa'; // Added FaCalendarCheck for confirmed bookings management
 
 function DashboardSidebar() {
   const { user, isLoggedIn } = useAuth();
@@ -26,7 +26,7 @@ function DashboardSidebar() {
       </div>
       <nav className="flex-grow py-4">
         <ul className="space-y-2">
-          {/* Always available routes for any dashboard (profile, pending, announcements) */}
+          {/* Shared Routes (My Profile, Announcements) - paths adjusted per role baseDashboardPath */}
           <li>
             <NavLink
               to={`${baseDashboardPath}/profile`}
@@ -41,16 +41,34 @@ function DashboardSidebar() {
           </li>
           <li>
             <NavLink
-              to={`${baseDashboardPath}/pending-bookings`}
+              to={`${baseDashboardPath}/announcements`}
               className={({ isActive }) =>
                 `flex items-center px-6 py-3 text-lg hover:bg-gray-700 transition-colors duration-200 ${
                   isActive ? 'bg-blue-600 font-semibold' : 'text-gray-300'
                 }`
               }
             >
-              <FaClipboardList className="mr-3 text-xl" /> Pending Bookings
+              <FaBullhorn className="mr-3 text-xl" /> Announcements
             </NavLink>
           </li>
+
+          {/* User/Member Specific Links */}
+          {user.role !== 'admin' && ( // Hide these for admin, as admin has separate management links
+            <>
+              <li>
+                <NavLink
+                  to={`${baseDashboardPath}/pending-bookings`}
+                  className={({ isActive }) =>
+                    `flex items-center px-6 py-3 text-lg hover:bg-gray-700 transition-colors duration-200 ${
+                      isActive ? 'bg-blue-600 font-semibold' : 'text-gray-300'
+                    }`
+                  }
+                >
+                  <FaClipboardList className="mr-3 text-xl" /> Pending Bookings
+                </NavLink>
+              </li>
+            </>
+          )}
 
           {/* Member-specific links */}
           {user.role === 'member' && (
@@ -58,7 +76,6 @@ function DashboardSidebar() {
               <li>
                 <NavLink
                   to={`${baseDashboardPath}/approved-bookings`}
-                  // Comment moved here {/* NEW LINK */}
                   className={({ isActive }) =>
                     `flex items-center px-6 py-3 text-lg hover:bg-gray-700 transition-colors duration-200 ${
                       isActive ? 'bg-blue-600 font-semibold' : 'text-gray-300'
@@ -71,7 +88,6 @@ function DashboardSidebar() {
               <li>
                 <NavLink
                   to={`${baseDashboardPath}/confirmed-bookings`}
-                  // Comment moved here {/* NEW LINK */}
                   className={({ isActive }) =>
                     `flex items-center px-6 py-3 text-lg hover:bg-gray-700 transition-colors duration-200 ${
                       isActive ? 'bg-blue-600 font-semibold' : 'text-gray-300'
@@ -84,7 +100,6 @@ function DashboardSidebar() {
               <li>
                 <NavLink
                   to={`${baseDashboardPath}/payment-history`}
-                  // Comment moved here {/* NEW LINK */}
                   className={({ isActive }) =>
                     `flex items-center px-6 py-3 text-lg hover:bg-gray-700 transition-colors duration-200 ${
                       isActive ? 'bg-blue-600 font-semibold' : 'text-gray-300'
@@ -97,9 +112,21 @@ function DashboardSidebar() {
             </>
           )}
 
-          {/* Admin-specific links (from previous setup, remain same for now) */}
+          {/* Admin-specific links */}
           {user.role === 'admin' && (
             <>
+              <li>
+                <NavLink
+                  to={`${baseDashboardPath}/overview`}
+                  className={({ isActive }) =>
+                    `flex items-center px-6 py-3 text-lg hover:bg-gray-700 transition-colors duration-200 ${
+                      isActive ? 'bg-blue-600 font-semibold' : 'text-gray-300'
+                    }`
+                  }
+                >
+                  <FaChartBar className="mr-3 text-xl" /> Dashboard Overview
+                </NavLink>
+              </li>
               <li>
                 <NavLink
                   to={`${baseDashboardPath}/manage-bookings-approval`}
@@ -121,7 +148,7 @@ function DashboardSidebar() {
                     }`
                   }
                 >
-                  <FaUsers className="mr-3 text-xl" /> Manage Members
+                  <FaUserShield className="mr-3 text-xl" /> Manage Members
                 </NavLink>
               </li>
               <li>
@@ -150,6 +177,18 @@ function DashboardSidebar() {
               </li>
               <li>
                 <NavLink
+                  to={`${baseDashboardPath}/manage-all-bookings`}
+                  className={({ isActive }) =>
+                    `flex items-center px-6 py-3 text-lg hover:bg-gray-700 transition-colors duration-200 ${
+                      isActive ? 'bg-blue-600 font-semibold' : 'text-gray-300'
+                    }`
+                  }
+                >
+                  <FaCalendarCheck className="mr-3 text-xl" /> Manage All Bookings
+                </NavLink>
+              </li>
+              <li>
+                <NavLink
                   to={`${baseDashboardPath}/manage-coupons`}
                   className={({ isActive }) =>
                     `flex items-center px-6 py-3 text-lg hover:bg-gray-700 transition-colors duration-200 ${
@@ -174,19 +213,6 @@ function DashboardSidebar() {
               </li>
             </>
           )}
-          {/* Announcements route is available for all roles within their respective dashboards */}
-          <li>
-            <NavLink
-              to={`${baseDashboardPath}/announcements`}
-              className={({ isActive }) =>
-                `flex items-center px-6 py-3 text-lg hover:bg-gray-700 transition-colors duration-200 ${
-                  isActive ? 'bg-blue-600 font-semibold' : 'text-gray-300'
-                }`
-              }
-            >
-              <FaBullhorn className="mr-3 text-xl" /> Announcements
-            </NavLink>
-          </li>
         </ul>
       </nav>
     </div>

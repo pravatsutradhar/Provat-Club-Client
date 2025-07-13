@@ -17,15 +17,20 @@ import RegisterPage from './pages/RegisterPage';
 // Dashboard Layouts
 import UserDashboard from './pages/UserDashboard';
 import MemberDashboard from './pages/MemberDashboard';
-import AdminDashboardPlaceholder from './components/dashboard/AdminDashboardPlaceholder'; // Placeholder for Admin Dashboard
+import AdminDashboard from './pages/AdminDashboard'; // Import AdminDashboard
 
-// Nested Dashboard Components
-import UserMyProfile from './components/dashboard/UserMyProfile';
-import UserPendingBookings from './components/dashboard/UserPendingBookings';
+
+// Nested Dashboard Components (Shared & Admin Specific)
+import UserMyProfile from './components/dashboard/UserMyProfile'; // Re-used for User/Member/Admin Profile
+import UserPendingBookings from './components/dashboard/UserPendingBookings'; // Re-used for User/Member Pending Bookings
 import MemberApprovedBookings from './components/dashboard/MemberApprovedBookings';
 import MemberConfirmedBookings from './components/dashboard/MemberConfirmedBookings';
 import MemberPaymentHistory from './components/dashboard/MemberPaymentHistory';
-import AnnouncementsList from './components/dashboard/AnnouncementsList';
+import AnnouncementsList from './components/dashboard/AnnouncementsList'; // Re-used for all dashboards Announcements
+
+import AdminProfile from './components/dashboard/AdminProfile'; // Admin specific Profile
+import AdminDashboardOverview from './components/dashboard/AdminDashboardOverview'; // Admin specific Overview
+
 
 // Payment Page
 import PaymentPage from './pages/PaymentPage';
@@ -87,8 +92,13 @@ function App() {
 
               {/* Admin Dashboard */}
               <Route path="/admin/dashboard/*" element={<PrivateRoute allowedRoles={['admin']} />}>
-                <Route index element={<AdminDashboardPlaceholder />} />
-                <Route path="*" element={<AdminDashboardPlaceholder />} />
+                <Route element={<AdminDashboard />}> {/* Render AdminDashboard here */}
+                  <Route index element={<AdminDashboardOverview />} /> {/* Default child route for Admin */}
+                  <Route path="profile" element={<AdminProfile />} /> {/* Admin specific profile */}
+                  <Route path="overview" element={<AdminDashboardOverview />} /> {/* Admin specific overview */}
+                  <Route path="announcements" element={<AnnouncementsList />} /> {/* Re-use general announcements list */}
+                  {/* Other admin routes will go here in subsequent steps */}
+                </Route>
               </Route>
             </Routes>
           </main>
