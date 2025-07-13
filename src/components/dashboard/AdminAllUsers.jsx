@@ -1,0 +1,111 @@
+import React, { useState } from 'react';
+import { useAllUsersAdmin, useDeleteUser } from '../../hooks/useAdminDashboard'; // Import delete mutation
+import { toast } from '../common/CustomToast';
+
+function AdminAllUsers() {
+  const [searchTerm, setSearchTerm] = useState('');
+  const { data: allUsers, isLoading, isError, error } = useAllUsersAdmin();
+  const deleteUserMutation = useDeleteUser();
+
+  if (isLoading) {
+    return <div className="text-center text-gray-600 text-lg py-10">Loading all users...</div>;
+  }
+
+  if (isError) {
+    return <div className="text-center text-red-600 text-lg py-10">Error: {error.message || 'Failed to load all users.'}</div>;
+  }
+
+  const filteredUsers = allUsers.filter(user =>
+    user.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    user.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    user.role.toLowerCase().includes(searchTerm.toLowerCase())
+  );
+
+  const handleDeleteUser = (userId, userName) => {
+    if (window.confirm(`Are you sure you want to delete user "${userName}"? This action cannot be undone.`)) {
+      deleteUserMutation.mutate(userId);
+    }
+  };
+
+  return (
+    <div className="bg-white p-6 rounded-lg shadow-md max-w-6xl mx-auto">
+      <h2 className="text-3xl font-bold text-gray-800 mb-6 border-b pb-4">All Users</h2>
+
+      <div className="mb-6">
+        <input
+          type="text"
+          placeholder="Search by name, email, or role..."
+          className="form-input w-full md:w-1/2 p-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500"
+          value={searchTerm}
+          onChange={(e) => setSearchTerm(e.target.value)}
+        />
+      </div>
+
+      {filteredUsers.length === 0 ? (
+        <p className="text-center text-gray-600 text-lg py-10">No users found matching your search.</p>
+      ) : (
+        <div className="overflow-x-auto">
+          <table className="min-w-full divide-y divide-gray-200">
+            <thead className="bg-gray-50">
+              <tr>
+                <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  Name
+                </th>
+                <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  Email
+                </th>
+                <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  Role
+                </th>
+                <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  Registration Date
+                </th>
+                <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  Actions
+                </th>
+              </tr>
+            </thead>
+            <tbody className="bg-white divide-y divide-gray-200">
+              {filteredUsers.map((user) => (
+                <tr key={user._id}>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                    {user.name}
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">
+                    {user.email}
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm">
+                    <span className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${
+                      user.role === 'admin' ? 'bg-red-100 text-red-800' :
+                      user.role === 'member' ? 'bg-green-100 text-green-800' :
+                      'bg-blue-100 text-blue-800'
+                    }`}>
+                      {user.role.charAt(0).toUpperCase() + user.role.slice(1)}
+                    </span>
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">
+                    {new Date(user.registrationDate).toLocaleDateString()}
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                    {/* Only allow deleting non-admin users or yourself (with caution) */}
+                    {user.role !== 'admin' && ( // Prevent accidental deletion of other admins
+                      <button
+                        onClick={() => handleDeleteUser(user._id, user.name)}
+                        className="text-red-600 hover:text-red-900 transition duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
+                        disabled={deleteUserMutation.status === 'pending' && deleteUserMutation.variables === user._id}
+                      >
+                        {deleteUserMutation.variables === user._id && deleteUserMutation.status === 'pending' ? 'Deleting...' : 'Delete'}
+                      </button>
+                    )}
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      )}
+    </div>
+  );
+}
+
+export default AdminAllUsers;

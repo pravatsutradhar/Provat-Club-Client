@@ -21,16 +21,18 @@ import AdminDashboard from './pages/AdminDashboard'; // Import AdminDashboard
 
 
 // Nested Dashboard Components (Shared & Admin Specific)
-import UserMyProfile from './components/dashboard/UserMyProfile'; // Re-used for User/Member/Admin Profile
-import UserPendingBookings from './components/dashboard/UserPendingBookings'; // Re-used for User/Member Pending Bookings
+import UserMyProfile from './components/dashboard/UserMyProfile';
+import UserPendingBookings from './components/dashboard/UserPendingBookings';
 import MemberApprovedBookings from './components/dashboard/MemberApprovedBookings';
 import MemberConfirmedBookings from './components/dashboard/MemberConfirmedBookings';
 import MemberPaymentHistory from './components/dashboard/MemberPaymentHistory';
-import AnnouncementsList from './components/dashboard/AnnouncementsList'; // Re-used for all dashboards Announcements
+import AnnouncementsList from './components/dashboard/AnnouncementsList';
 
-import AdminProfile from './components/dashboard/AdminProfile'; // Admin specific Profile
-import AdminDashboardOverview from './components/dashboard/AdminDashboardOverview'; // Admin specific Overview
-
+import AdminProfile from './components/dashboard/AdminProfile';
+import AdminDashboardOverview from './components/dashboard/AdminDashboardOverview';
+import AdminManageBookingApprovals from './components/dashboard/AdminManageBookingApprovals'; // New Import
+import AdminAllUsers from './components/dashboard/AdminAllUsers'; // New Import
+import AdminManageMembers from './components/dashboard/AdminManageMembers'; // New Import
 
 // Payment Page
 import PaymentPage from './pages/PaymentPage';
@@ -92,11 +94,14 @@ function App() {
 
               {/* Admin Dashboard */}
               <Route path="/admin/dashboard/*" element={<PrivateRoute allowedRoles={['admin']} />}>
-                <Route element={<AdminDashboard />}> {/* Render AdminDashboard here */}
-                  <Route index element={<AdminDashboardOverview />} /> {/* Default child route for Admin */}
-                  <Route path="profile" element={<AdminProfile />} /> {/* Admin specific profile */}
-                  <Route path="overview" element={<AdminDashboardOverview />} /> {/* Admin specific overview */}
-                  <Route path="announcements" element={<AnnouncementsList />} /> {/* Re-use general announcements list */}
+                <Route element={<AdminDashboard />}>
+                  <Route index element={<AdminDashboardOverview />} />
+                  <Route path="profile" element={<AdminProfile />} />
+                  <Route path="overview" element={<AdminDashboardOverview />} />
+                  <Route path="manage-bookings-approval" element={<AdminManageBookingApprovals />} /> {/* New Route */}
+                  <Route path="manage-members" element={<AdminManageMembers />} /> {/* New Route */}
+                  <Route path="all-users" element={<AdminAllUsers />} /> {/* New Route */}
+                  <Route path="announcements" element={<AnnouncementsList />} />
                   {/* Other admin routes will go here in subsequent steps */}
                 </Route>
               </Route>
