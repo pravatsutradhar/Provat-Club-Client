@@ -10,17 +10,25 @@ import PrivateRoute from './components/common/PrivateRoute';
 // Pages
 import HomePage from './pages/HomePage';
 import CourtsPage from './pages/CourtsPage';
-import UsersPage from './pages/UsersPage'; // For debugging/testing, will be restricted later
+import UsersPage from './pages/UsersPage';
 import LoginPage from './pages/LoginPage';
 import RegisterPage from './pages/RegisterPage';
-import UserDashboard from './pages/UserDashboard'; // Main User Dashboard Layout
-import MemberDashboardPlaceholder from './components/dashboard/MemberDashboardPlaceholder'; // Placeholder for Member Dashboard
-import AdminDashboardPlaceholder from './components/dashboard/AdminDashboardPlaceholder';   // Placeholder for Admin Dashboard
 
-// Nested Dashboard Components (these will be rendered by the Outlet in UserDashboard, etc.)
+// Dashboard Layouts
+import UserDashboard from './pages/UserDashboard';
+import MemberDashboard from './pages/MemberDashboard';
+import AdminDashboardPlaceholder from './components/dashboard/AdminDashboardPlaceholder'; // Placeholder for Admin Dashboard
+
+// Nested Dashboard Components
 import UserMyProfile from './components/dashboard/UserMyProfile';
 import UserPendingBookings from './components/dashboard/UserPendingBookings';
-import AnnouncementsList from './components/dashboard/AnnouncementsList'; // For User/Member/Admin
+import MemberApprovedBookings from './components/dashboard/MemberApprovedBookings';
+import MemberConfirmedBookings from './components/dashboard/MemberConfirmedBookings';
+import MemberPaymentHistory from './components/dashboard/MemberPaymentHistory';
+import AnnouncementsList from './components/dashboard/AnnouncementsList';
+
+// Payment Page
+import PaymentPage from './pages/PaymentPage';
 
 
 const queryClient = new QueryClient();
@@ -45,38 +53,43 @@ function App() {
             <Routes>
               <Route path="/" element={<HomePage />} />
               <Route path="/courts" element={<CourtsPage />} />
-              <Route path="/users" element={<UsersPage />} /> {/* This route will eventually be protected for admin */}
+              <Route path="/users" element={<UsersPage />} />
               <Route path="/login" element={<LoginPage />} />
               <Route path="/register" element={<RegisterPage />} />
 
+              {/* Payment Page Route */}
+              <Route path="/payment/:bookingId" element={<PrivateRoute allowedRoles={['member', 'admin']}><PaymentPage /></PrivateRoute>} />
+
               {/* Protected Routes for Dashboards */}
-              {/* User Dashboard: Access for 'user', 'member', 'admin'. UserDashboard component handles specific role redirection. */}
+              {/* User Dashboard */}
               <Route path="/user/dashboard/*" element={<PrivateRoute allowedRoles={['user', 'member', 'admin']} />}>
-                <Route element={<UserDashboard />}> {/* This wraps the dashboard layout */}
-                  <Route index element={<UserMyProfile />} /> {/* Default child route for /user/dashboard */}
+                <Route element={<UserDashboard />}>
+                  <Route index element={<UserMyProfile />} />
                   <Route path="profile" element={<UserMyProfile />} />
                   <Route path="pending-bookings" element={<UserPendingBookings />} />
                   <Route path="announcements" element={<AnnouncementsList />} />
-                  {/* Add more user-specific routes here as needed */}
+                  {/* Additional user-specific routes */}
                 </Route>
               </Route>
 
-              {/* Member Dashboard: Access for 'member', 'admin' */}
+              {/* Member Dashboard */}
               <Route path="/member/dashboard/*" element={<PrivateRoute allowedRoles={['member', 'admin']} />}>
-                {/* Currently a placeholder. Will be replaced by a MemberDashboard component similar to UserDashboard */}
-                <Route index element={<MemberDashboardPlaceholder />} />
-                <Route path="*" element={<MemberDashboardPlaceholder />} /> {/* Catch-all for any nested paths */}
+                <Route element={<MemberDashboard />}>
+                  <Route index element={<UserMyProfile />} />
+                  <Route path="profile" element={<UserMyProfile />} />
+                  <Route path="pending-bookings" element={<UserPendingBookings />} />
+                  <Route path="approved-bookings" element={<MemberApprovedBookings />} />
+                  <Route path="confirmed-bookings" element={<MemberConfirmedBookings />} />
+                  <Route path="payment-history" element={<MemberPaymentHistory />} />
+                  <Route path="announcements" element={<AnnouncementsList />} />
+                </Route>
               </Route>
 
-              {/* Admin Dashboard: Access for 'admin' only */}
+              {/* Admin Dashboard */}
               <Route path="/admin/dashboard/*" element={<PrivateRoute allowedRoles={['admin']} />}>
-                {/* Currently a placeholder. Will be replaced by an AdminDashboard component */}
                 <Route index element={<AdminDashboardPlaceholder />} />
-                <Route path="*" element={<AdminDashboardPlaceholder />} /> {/* Catch-all for any nested paths */}
+                <Route path="*" element={<AdminDashboardPlaceholder />} />
               </Route>
-
-              {/* Catch-all for 404 Not Found (optional) */}
-              {/* <Route path="*" element={<NotFoundPage />} /> */}
             </Routes>
           </main>
           <Footer />

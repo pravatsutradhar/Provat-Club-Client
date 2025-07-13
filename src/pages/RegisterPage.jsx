@@ -2,18 +2,20 @@ import React, { useState, useEffect } from 'react';
 import { useAuth } from '../contexts/AuthContext';
 import { useNavigate } from 'react-router-dom';
 import { toast } from '../components/common/CustomToast';
+import { useQueryClient } from '@tanstack/react-query'; // Import useQueryClient
 
 function RegisterPage() {
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
-  const { register, isLoggedIn, registerStatus, user } = useAuth(); // Destructure 'user'
+  const { register, isLoggedIn, registerStatus, user } = useAuth();
   const navigate = useNavigate();
+  const queryClient = useQueryClient(); // Initialize query client
 
   // Redirect if already logged in based on user role
   useEffect(() => {
-    if (isLoggedIn && user) { // Ensure user object is available
+    if (isLoggedIn && user) {
       let redirectPath = '/';
       if (user.role === 'admin') {
         redirectPath = '/admin/dashboard/profile';
@@ -25,17 +27,17 @@ function RegisterPage() {
       navigate(redirectPath, { replace: true });
       toast.info(`You are already logged in as a ${user.role}.`);
     }
-  }, [isLoggedIn, navigate, user]); // Added 'user' to dependencies
+  }, [isLoggedIn, navigate, user]);
 
   // Redirect to login page on successful registration
   useEffect(() => {
     if (registerStatus === 'success') {
-      // Give a small delay for toast to show before navigating
+      queryClient.invalidateQueries(['users']); // Invalidate all users query if admin might view it
       setTimeout(() => {
         navigate('/login', { replace: true });
       }, 1000); // 1 second delay
     }
-  }, [registerStatus, navigate]);
+  }, [registerStatus, navigate, queryClient]); // Add queryClient to dependencies
 
   const handleSubmit = (e) => {
     e.preventDefault();

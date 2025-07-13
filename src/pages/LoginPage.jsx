@@ -2,26 +2,31 @@ import React, { useState, useEffect } from 'react';
 import { useAuth } from '../contexts/AuthContext';
 import { useNavigate } from 'react-router-dom';
 import { toast } from '../components/common/CustomToast';
+import { useQueryClient } from '@tanstack/react-query'; // Import useQueryClient
 
 function LoginPage() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const { login, isLoggedIn, loginStatus, user } = useAuth(); // Destructure 'user' to handle redirection for different roles
+  const { login, isLoggedIn, loginStatus, user } = useAuth();
   const navigate = useNavigate();
+  const queryClient = useQueryClient(); // Initialize query client
 
   // Redirect if already logged in based on user role
   useEffect(() => {
-    if (isLoggedIn && user) { // Ensure user object is available
-      let redirectPath = '/'; // Default redirect
+    // Only redirect if auth loading is complete and user is genuinely logged in
+    if (isLoggedIn && user) {
+      let redirectPath = '/';
       if (user.role === 'admin') {
         redirectPath = '/admin/dashboard/profile';
       } else if (user.role === 'member') {
         redirectPath = '/member/dashboard/profile';
-      } else { // 'user' role
+      } else {
         redirectPath = '/user/dashboard/profile';
       }
       navigate(redirectPath, { replace: true });
-      toast.info(`You are already logged in as a ${user.role}.`);
+      // The toast.info might be causing the issue if it's called too early
+      // Let's remove it from here if the user is already logged in, as they are being navigated away.
+      // toast.info(`You are already logged in as a ${user.role}.`); // Removed this line
     }
   }, [isLoggedIn, navigate, user]); // Added 'user' to dependencies
 
@@ -31,7 +36,24 @@ function LoginPage() {
       toast.error('Please fill in both email and password.');
       return;
     }
-    login({ email, password });
+    // Call login mutation
+    login({ email, password }, {
+      onSuccess: (data) => {
+        // Invalidate and potentially refetch user-specific queries after successful login
+        // This is key for the "after login profile not loading properly" issue
+        queryClient.invalidateQueries(['userProfile']);
+        queryClient.invalidateQueries(['myBookings']);
+        queryClient.invalidateQueries(['approvedBookings']);
+        queryClient.invalidateQueries(['confirmedBookings']);
+        queryClient.invalidateQueries(['paymentHistory']);
+        queryClient.invalidateQueries(['users']); // If admin needs updated user list
+        // TanStack Query's invalidation will trigger refetching if those components are mounted/active.
+        // The useEffect above will handle navigation once AuthContext's 'user' state updates.
+        // We ensure the toast is called *after* login is successful here:
+        toast.success(data.message || 'Login successful!'); // Added toast here
+      },
+      // onError is handled globally by useAuth's loginMutation, so no need to duplicate here
+    });
   };
 
   return (
@@ -51,7 +73,7 @@ function LoginPage() {
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               required
-              autoComplete="email" // Added for accessibility
+              autoComplete="email"
             />
           </div>
           <div className="mb-6">
@@ -66,7 +88,7 @@ function LoginPage() {
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               required
-              autoComplete="current-password" // Added for accessibility
+              autoComplete="current-password"
             />
           </div>
           <div className="flex items-center justify-between">

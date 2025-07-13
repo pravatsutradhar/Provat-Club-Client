@@ -1,13 +1,12 @@
 import React from 'react';
 import { NavLink } from 'react-router-dom';
 import { useAuth } from '../../contexts/AuthContext';
-import { FaUser, FaClipboardList, FaBullhorn, FaCreditCard, FaHistory, FaUsers, FaDumbbell, FaTicketAlt } from 'react-icons/fa'; // Added more icons
+import { FaUser, FaClipboardList, FaBullhorn, FaCreditCard, FaHistory, FaUsers, FaDumbbell, FaTicketAlt } from 'react-icons/fa';
 
 function DashboardSidebar() {
-  const { user, isLoggedIn } = useAuth(); // Ensure isLoggedIn is also available
+  const { user, isLoggedIn } = useAuth();
 
-  // Determine the base path for the current user's dashboard
-  let baseDashboardPath = '/user/dashboard'; // Default
+  let baseDashboardPath = '/user/dashboard';
   if (isLoggedIn && user) {
     if (user.role === 'admin') {
       baseDashboardPath = '/admin/dashboard';
@@ -16,7 +15,6 @@ function DashboardSidebar() {
     }
   }
 
-  // If not logged in, prevent rendering sidebar (though PrivateRoute should handle this)
   if (!isLoggedIn || !user) {
     return null;
   }
@@ -28,7 +26,7 @@ function DashboardSidebar() {
       </div>
       <nav className="flex-grow py-4">
         <ul className="space-y-2">
-          {/* Always available routes for any dashboard */}
+          {/* Always available routes for any dashboard (profile, pending, announcements) */}
           <li>
             <NavLink
               to={`${baseDashboardPath}/profile`}
@@ -60,6 +58,7 @@ function DashboardSidebar() {
               <li>
                 <NavLink
                   to={`${baseDashboardPath}/approved-bookings`}
+                  // Comment moved here {/* NEW LINK */}
                   className={({ isActive }) =>
                     `flex items-center px-6 py-3 text-lg hover:bg-gray-700 transition-colors duration-200 ${
                       isActive ? 'bg-blue-600 font-semibold' : 'text-gray-300'
@@ -72,6 +71,7 @@ function DashboardSidebar() {
               <li>
                 <NavLink
                   to={`${baseDashboardPath}/confirmed-bookings`}
+                  // Comment moved here {/* NEW LINK */}
                   className={({ isActive }) =>
                     `flex items-center px-6 py-3 text-lg hover:bg-gray-700 transition-colors duration-200 ${
                       isActive ? 'bg-blue-600 font-semibold' : 'text-gray-300'
@@ -84,6 +84,7 @@ function DashboardSidebar() {
               <li>
                 <NavLink
                   to={`${baseDashboardPath}/payment-history`}
+                  // Comment moved here {/* NEW LINK */}
                   className={({ isActive }) =>
                     `flex items-center px-6 py-3 text-lg hover:bg-gray-700 transition-colors duration-200 ${
                       isActive ? 'bg-blue-600 font-semibold' : 'text-gray-300'
@@ -96,7 +97,7 @@ function DashboardSidebar() {
             </>
           )}
 
-          {/* Admin-specific links */}
+          {/* Admin-specific links (from previous setup, remain same for now) */}
           {user.role === 'admin' && (
             <>
               <li>
