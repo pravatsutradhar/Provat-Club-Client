@@ -6,21 +6,29 @@ import { toast } from '../components/common/CustomToast';
 function LoginPage() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const { login, isLoggedIn, loginStatus } = useAuth();
+  const { login, isLoggedIn, loginStatus, user } = useAuth(); // Destructure 'user' to handle redirection for different roles
   const navigate = useNavigate();
 
-  // Redirect if already logged in
+  // Redirect if already logged in based on user role
   useEffect(() => {
-    if (isLoggedIn) {
-      navigate('/'); // Redirect to home or dashboard
-      toast.info('You are already logged in.');
+    if (isLoggedIn && user) { // Ensure user object is available
+      let redirectPath = '/'; // Default redirect
+      if (user.role === 'admin') {
+        redirectPath = '/admin/dashboard/profile';
+      } else if (user.role === 'member') {
+        redirectPath = '/member/dashboard/profile';
+      } else { // 'user' role
+        redirectPath = '/user/dashboard/profile';
+      }
+      navigate(redirectPath, { replace: true });
+      toast.info(`You are already logged in as a ${user.role}.`);
     }
-  }, [isLoggedIn, navigate]);
+  }, [isLoggedIn, navigate, user]); // Added 'user' to dependencies
 
   const handleSubmit = (e) => {
     e.preventDefault();
     if (!email || !password) {
-      toast.error('Please fill in all fields.');
+      toast.error('Please fill in both email and password.');
       return;
     }
     login({ email, password });
@@ -39,10 +47,11 @@ function LoginPage() {
               type="email"
               id="email"
               className="shadow appearance-none border rounded-lg w-full py-3 px-4 text-gray-700 leading-tight focus:outline-none focus:ring-2 focus:ring-blue-500"
-              placeholder="Enter your email"
+              placeholder="your.email@example.com"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               required
+              autoComplete="email" // Added for accessibility
             />
           </div>
           <div className="mb-6">
@@ -53,10 +62,11 @@ function LoginPage() {
               type="password"
               id="password"
               className="shadow appearance-none border rounded-lg w-full py-3 px-4 text-gray-700 mb-3 leading-tight focus:outline-none focus:ring-2 focus:ring-blue-500"
-              placeholder="Enter your password"
+              placeholder="********"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               required
+              autoComplete="current-password" // Added for accessibility
             />
           </div>
           <div className="flex items-center justify-between">

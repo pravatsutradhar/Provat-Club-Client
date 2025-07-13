@@ -8,28 +8,39 @@ function RegisterPage() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
-  const { register, isLoggedIn, registerStatus } = useAuth();
+  const { register, isLoggedIn, registerStatus, user } = useAuth(); // Destructure 'user'
   const navigate = useNavigate();
 
-  // Redirect if already logged in
+  // Redirect if already logged in based on user role
   useEffect(() => {
-    if (isLoggedIn) {
-      navigate('/'); // Redirect to home or dashboard
-      toast.info('You are already logged in.');
+    if (isLoggedIn && user) { // Ensure user object is available
+      let redirectPath = '/';
+      if (user.role === 'admin') {
+        redirectPath = '/admin/dashboard/profile';
+      } else if (user.role === 'member') {
+        redirectPath = '/member/dashboard/profile';
+      } else {
+        redirectPath = '/user/dashboard/profile';
+      }
+      navigate(redirectPath, { replace: true });
+      toast.info(`You are already logged in as a ${user.role}.`);
     }
-  }, [isLoggedIn, navigate]);
+  }, [isLoggedIn, navigate, user]); // Added 'user' to dependencies
 
   // Redirect to login page on successful registration
   useEffect(() => {
     if (registerStatus === 'success') {
-      navigate('/login');
+      // Give a small delay for toast to show before navigating
+      setTimeout(() => {
+        navigate('/login', { replace: true });
+      }, 1000); // 1 second delay
     }
   }, [registerStatus, navigate]);
 
   const handleSubmit = (e) => {
     e.preventDefault();
     if (!name || !email || !password || !confirmPassword) {
-      toast.error('Please fill in all fields.');
+      toast.error('Please fill in all required fields.');
       return;
     }
     if (password !== confirmPassword) {
@@ -57,10 +68,11 @@ function RegisterPage() {
               type="text"
               id="name"
               className="shadow appearance-none border rounded-lg w-full py-3 px-4 text-gray-700 leading-tight focus:outline-none focus:ring-2 focus:ring-blue-500"
-              placeholder="Enter your name"
+              placeholder="Your full name"
               value={name}
               onChange={(e) => setName(e.target.value)}
               required
+              autoComplete="name"
             />
           </div>
           <div className="mb-4">
@@ -71,10 +83,11 @@ function RegisterPage() {
               type="email"
               id="email"
               className="shadow appearance-none border rounded-lg w-full py-3 px-4 text-gray-700 leading-tight focus:outline-none focus:ring-2 focus:ring-blue-500"
-              placeholder="Enter your email"
+              placeholder="your.email@example.com"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               required
+              autoComplete="email"
             />
           </div>
           <div className="mb-4">
@@ -85,10 +98,11 @@ function RegisterPage() {
               type="password"
               id="password"
               className="shadow appearance-none border rounded-lg w-full py-3 px-4 text-gray-700 mb-3 leading-tight focus:outline-none focus:ring-2 focus:ring-blue-500"
-              placeholder="Enter your password"
+              placeholder="Minimum 6 characters"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               required
+              autoComplete="new-password"
             />
           </div>
           <div className="mb-6">
@@ -99,10 +113,11 @@ function RegisterPage() {
               type="password"
               id="confirmPassword"
               className="shadow appearance-none border rounded-lg w-full py-3 px-4 text-gray-700 mb-3 leading-tight focus:outline-none focus:ring-2 focus:ring-blue-500"
-              placeholder="Confirm your password"
+              placeholder="Re-enter your password"
               value={confirmPassword}
               onChange={(e) => setConfirmPassword(e.target.value)}
               required
+              autoComplete="new-password"
             />
           </div>
           <div className="flex items-center justify-between">

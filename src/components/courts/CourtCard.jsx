@@ -1,19 +1,16 @@
 import React from 'react';
-// Removed specific imports like toast, useNavigate, useAuth, BookingModal
-// as they are handled by CourtsPage now for modal logic
 
 function CourtCard({ court, onBookNowClick }) { // Receive onBookNowClick prop
 
-  // This function now simply triggers the handler passed from CourtsPage
   const handleBookNow = () => {
-    onBookNowClick(court); // Pass the specific court data up to CourtsPage
+    onBookNowClick(court); // Call the handler passed from CourtsPage, passing the court object
   };
 
   return (
     <div className="bg-white rounded-lg shadow-lg overflow-hidden flex flex-col h-full">
       <img
         src={court.image}
-        alt={court.name}
+        alt={court.name} // Alt text for accessibility
         className="w-full h-48 object-cover"
       />
       <div className="p-5 flex flex-col flex-grow">
@@ -28,14 +25,13 @@ function CourtCard({ court, onBookNowClick }) { // Receive onBookNowClick prop
             {court.description}
         </p>
         <button
-          onClick={handleBookNow} // This button now calls the prop from CourtsPage
+          onClick={handleBookNow}
           className="mt-auto bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded-md transition duration-300 ease-in-out focus:outline-none focus:ring-2 focus:ring-blue-500"
+          aria-label={`Book ${court.name}`} // Accessibility
         >
           Book Now
         </button>
       </div>
-
-      {/* IMPORTANT: BookingModal IS NOT RENDERED HERE ANYMORE. It's in CourtsPage.jsx */}
     </div>
   );
 }

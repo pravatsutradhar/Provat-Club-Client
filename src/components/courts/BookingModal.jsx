@@ -1,16 +1,14 @@
 import React, { useState, useEffect } from 'react';
 import Modal from 'react-modal';
-import DatePicker from 'react-datepicker'; // Install react-datepicker: npm install react-datepicker
-import 'react-datepicker/dist/react-datepicker.css'; // Don't forget to import CSS
+import DatePicker from 'react-datepicker';
+import 'react-datepicker/dist/react-datepicker.css';
 import { useAuth } from '../../contexts/AuthContext';
 import { toast } from '../common/CustomToast';
-import { useMutation } from '@tanstack/react-query';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
 import api from '../../services/api';
 
-// Set app element for react-modal (important for accessibility)
-Modal.setAppElement('#root');
+// IMPORTANT: Modal.setAppElement('#root') should only be called once in src/main.jsx
 
-// Define available time slots (can be fetched from backend for specific courts if needed)
 const ALL_TIME_SLOTS = [
   "09:00 AM - 10:00 AM", "10:00 AM - 11:00 AM", "11:00 AM - 12:00 PM",
   "12:00 PM - 01:00 PM", "01:00 PM - 02:00 PM", "02:00 PM - 03:00 PM",
@@ -20,35 +18,41 @@ const ALL_TIME_SLOTS = [
 
 function BookingModal({ isOpen, onRequestClose, court }) {
   const { user } = useAuth();
-  const [selectedDate, setSelectedDate] = useState(null);
+  const queryClient = useQueryClient();
+  const [selectedDate, setSelectedDate] = useState(new Date());
   const [selectedSlots, setSelectedSlots] = useState([]);
   const [totalPrice, setTotalPrice] = useState(0);
 
   // Reset form when modal opens or court changes
   useEffect(() => {
-    if (isOpen) {
+    if (isOpen && court) { // Ensure modal is opening AND court data is available
       setSelectedDate(new Date()); // Default to today
       setSelectedSlots([]);
       setTotalPrice(0);
     }
-  }, [isOpen, court]);
+  }, [isOpen, court]); // Depend on isOpen and court
 
   // Calculate total price whenever selected slots or court changes
   useEffect(() => {
-    if (court) {
+    if (court) { // Ensure court data is available
       setTotalPrice(selectedSlots.length * court.pricePerSession);
     }
-  }, [selectedSlots, court]);
+  }, [selectedSlots, court]); // Depend on selectedSlots and court
 
   const handleSlotToggle = (slot) => {
     setSelectedSlots((prevSlots) =>
       prevSlots.includes(slot)
         ? prevSlots.filter((s) => s !== slot)
         : [...prevSlots, slot].sort((a, b) => {
-            // Simple string sort for time slots (e.g., "09:00" before "10:00")
-            const timeA = parseInt(a.substring(0, 2));
-            const timeB = parseInt(b.substring(0, 2));
-            return timeA - timeB;
+            // Sort by numerical hour for consistency (e.g., "09:00 AM" before "01:00 PM")
+            const parseTime = (timeStr) => {
+              const [time, ampm] = timeStr.split(' ');
+              let [hours, minutes] = time.split(':').map(Number);
+              if (ampm === 'PM' && hours !== 12) hours += 12;
+              if (ampm === 'AM' && hours === 12) hours = 0; // Midnight
+              return hours * 60 + minutes;
+            };
+            return parseTime(a.split(' - ')[0]) - parseTime(b.split(' - ')[0]);
           })
     );
   };
@@ -61,8 +65,9 @@ function BookingModal({ isOpen, onRequestClose, court }) {
     onSuccess: (data) => {
       toast.success(data.message || 'Booking request submitted successfully!');
       onRequestClose(); // Close modal on success
-      // Invalidate courts query to reflect potential availability changes (though less direct here)
-      // queryClient.invalidateQueries(['courts']);
+      // Invalidate relevant queries to refetch fresh data for dashboards
+      queryClient.invalidateQueries(['myBookings']); // Invalidate user's bookings list
+      // If you had a query for court availability, you'd invalidate that too.
     },
     onError: (error) => {
       const errorMessage = error.response?.data?.message || 'Failed to submit booking. Please try again.';
@@ -81,55 +86,58 @@ function BookingModal({ isOpen, onRequestClose, court }) {
       return;
     }
 
+    // Ensure date is sent in a consistent format (e.g., YYYY-MM-DD)
     const bookingData = {
       courtId: court._id,
       selectedSlots,
-      bookingDate: selectedDate.toISOString().split('T')[0], // YYYY-MM-DD format for backend
+      bookingDate: selectedDate.toISOString().split('T')[0], // "YYYY-MM-DD"
     };
 
     createBookingMutation.mutate(bookingData);
   };
 
-  if (!court) return null; // Don't render if no court data
+  if (!court) { // Render nothing if no court data is provided
+      return null;
+  }
 
   return (
     <Modal
       isOpen={isOpen}
       onRequestClose={onRequestClose}
       contentLabel="Book Court Modal"
-      className="Modal"
-      overlayClassName="Overlay"
+      className="Modal" // Apply custom styling classes
+      overlayClassName="Overlay" // Apply custom overlay styling classes
     >
       <div className="bg-white rounded-lg shadow-xl p-6 max-w-2xl mx-auto my-8">
         <div className="flex justify-between items-center mb-6 border-b pb-4">
           <h2 className="text-3xl font-bold text-gray-800">Book {court.name}</h2>
-          <button onClick={onRequestClose} className="text-gray-500 hover:text-gray-800 text-3xl">&times;</button>
+          <button onClick={onRequestClose} className="text-gray-500 hover:text-gray-800 text-3xl font-light" aria-label="Close modal">&times;</button>
         </div>
 
         <form onSubmit={handleSubmit}>
           {/* Court Info (Read-only) */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
             <div>
-              <label className="block text-gray-700 text-sm font-bold mb-2">Court Name</label>
-              <input type="text" value={court.name} className="form-input" readOnly disabled />
+              <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="courtName">Court Name</label>
+              <input type="text" id="courtName" value={court.name} className="form-input" readOnly disabled />
             </div>
             <div>
-              <label className="block text-gray-700 text-sm font-bold mb-2">Court Type</label>
-              <input type="text" value={court.type} className="form-input" readOnly disabled />
+              <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="courtType">Court Type</label>
+              <input type="text" id="courtType" value={court.type} className="form-input" readOnly disabled />
             </div>
             <div>
-              <label className="block text-gray-700 text-sm font-bold mb-2">Price Per Session</label>
-              <input type="text" value={`$${court.pricePerSession.toFixed(2)}`} className="form-input" readOnly disabled />
+              <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="pricePerSession">Price Per Session</label>
+              <input type="text" id="pricePerSession" value={`$${court.pricePerSession.toFixed(2)}`} className="form-input" readOnly disabled />
             </div>
             <div>
-              <label className="block text-gray-700 text-sm font-bold mb-2">Your Email</label>
-              <input type="text" value={user?.email || ''} className="form-input" readOnly disabled />
+              <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="userEmail">Your Email</label>
+              <input type="email" id="userEmail" value={user?.email || ''} className="form-input" readOnly disabled />
             </div>
           </div>
 
           {/* Booking Date Selection */}
           <div className="mb-6">
-            <label className="block text-gray-700 text-sm font-bold mb-2">Select Date</label>
+            <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="bookingDate">Select Date</label>
             <DatePicker
               selected={selectedDate}
               onChange={(date) => setSelectedDate(date)}
@@ -137,6 +145,7 @@ function BookingModal({ isOpen, onRequestClose, court }) {
               dateFormat="dd/MM/yyyy"
               className="form-input w-full"
               required
+              id="bookingDate"
             />
           </div>
 
@@ -154,6 +163,7 @@ function BookingModal({ isOpen, onRequestClose, court }) {
                       ? 'bg-blue-600 text-white border-blue-600'
                       : 'bg-gray-100 text-gray-800 border-gray-300 hover:bg-gray-200'
                   }`}
+                  aria-pressed={selectedSlots.includes(slot)} // Accessibility
                 >
                   {slot}
                 </button>

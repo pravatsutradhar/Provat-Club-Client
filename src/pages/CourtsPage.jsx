@@ -8,15 +8,15 @@ import BookingModal from '../components/courts/BookingModal';
 
 function CourtsPage() {
   const [currentPage, setCurrentPage] = useState(1);
-  const [itemsPerPage, setItemsPerPage] = useState(6);
-  const [viewMode, setViewMode] = useState('card');
+  const [itemsPerPage, setItemsPerPage] = useState(6); // Default for card format
+  const [viewMode, setViewMode] = useState('card'); // 'card' or 'table'
 
   // State for Booking Modal
   const [isBookingModalOpen, setIsBookingModalOpen] = useState(false);
   const [selectedCourtForBooking, setSelectedCourtForBooking] = useState(null);
 
   const navigate = useNavigate();
-  const { isLoggedIn } = useAuth(); // Crucial for checking login status
+  const { isLoggedIn } = useAuth();
 
   // Fetch courts using the custom hook with current page and limit
   const { data, isLoading, isError, error, isFetching } = useCourts(currentPage, itemsPerPage);
@@ -26,7 +26,7 @@ function CourtsPage() {
     if (isError) {
       toast.error(error.message || 'Failed to fetch courts.');
     }
-  }, [isError, error]);
+  }, [isError, error]); // Depend on isError and error object
 
   const courts = data?.data || [];
   const totalCourts = data?.total || 0;
@@ -40,13 +40,13 @@ function CourtsPage() {
 
   const handleViewModeChange = (mode) => {
     setViewMode(mode);
-    setItemsPerPage(mode === 'card' ? 6 : 10); // As per requirements
+    setItemsPerPage(mode === 'card' ? 6 : 10); // Adjust items per page based on view mode as per requirements
     setCurrentPage(1); // Reset to first page on view mode change
   };
 
   // Unified function to open the booking modal
   const handleOpenBookingModal = (court) => {
-    if (!isLoggedIn) { // Check login status here
+    if (!isLoggedIn) {
       toast.info('Please log in to book a court.');
       navigate('/login');
     } else {
@@ -60,9 +60,10 @@ function CourtsPage() {
     setSelectedCourtForBooking(null); // Clear selected court when modal closes
   };
 
-  if (isLoading && !isFetching) {
+  // Show full loading screen only on initial load (when data is null and loading)
+  if (isLoading && !courts.length) {
     return (
-      <div className="flex justify-center items-center h-[calc(100vh-150px)] text-xl font-semibold">
+      <div className="flex justify-center items-center h-[calc(100vh-150px)] text-xl font-semibold text-gray-700">
         Loading courts...
       </div>
     );
@@ -125,7 +126,7 @@ function CourtsPage() {
                 <CourtCard
                   key={court._id}
                   court={court}
-                  onBookNowClick={handleOpenBookingModal} // Pass the handler
+                  onBookNowClick={handleOpenBookingModal}
                 />
               ))}
             </div>
@@ -164,7 +165,7 @@ function CourtsPage() {
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
                         <button
-                          onClick={() => handleOpenBookingModal(court)} // Direct call to the unified handler
+                          onClick={() => handleOpenBookingModal(court)}
                           className="text-blue-600 hover:text-blue-900 transition duration-200"
                         >
                           Book Now
@@ -180,11 +181,12 @@ function CourtsPage() {
       )}
 
       {/* Render the single Booking Modal here, controlled by state in CourtsPage */}
-      {selectedCourtForBooking && ( // Only render if a court is selected
+      {/* Only render the modal component if it should be open or a court is selected */}
+      {isBookingModalOpen && selectedCourtForBooking && (
         <BookingModal
           isOpen={isBookingModalOpen}
           onRequestClose={handleCloseBookingModal}
-          court={selectedCourtForBooking} // Pass the dynamically selected court
+          court={selectedCourtForBooking}
         />
       )}
     </div>

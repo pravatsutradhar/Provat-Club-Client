@@ -1,5 +1,5 @@
 import React from 'react';
-import { FaFacebookF, FaTwitter, FaInstagram, FaLinkedinIn } from 'react-icons/fa'; // Install react-icons: npm install react-icons
+import { FaFacebookF, FaTwitter, FaInstagram, FaLinkedinIn } from 'react-icons/fa';
 
 function Footer() {
   return (
@@ -14,7 +14,7 @@ function Footer() {
           <p className="text-lg">Phone: +880 123 456 789</p>
         </div>
 
-        {/* Site Navigation (Optional, could be more links) */}
+        {/* Site Navigation */}
         <div className="mb-6 md:mb-0">
           <h3 className="text-xl font-bold text-white mb-4">Quick Links</h3>
           <ul className="space-y-2">
@@ -29,23 +29,23 @@ function Footer() {
         <div className="text-center md:text-right">
           <h3 className="text-xl font-bold text-white mb-4">Follow Us</h3>
           <div className="flex justify-center md:justify-end space-x-6">
-            <a href="https://facebook.com" target="_blank" rel="noopener noreferrer" className="text-gray-400 hover:text-white text-3xl transition-colors duration-200">
+            <a href="https://facebook.com/myclub" target="_blank" rel="noopener noreferrer" aria-label="Facebook" className="text-gray-400 hover:text-white text-3xl transition-colors duration-200">
               <FaFacebookF />
             </a>
-            <a href="https://twitter.com" target="_blank" rel="noopener noreferrer" className="text-gray-400 hover:text-white text-3xl transition-colors duration-200">
+            <a href="https://twitter.com/myclub" target="_blank" rel="noopener noreferrer" aria-label="Twitter" className="text-gray-400 hover:text-white text-3xl transition-colors duration-200">
               <FaTwitter />
             </a>
-            <a href="https://instagram.com" target="_blank" rel="noopener noreferrer" className="text-gray-400 hover:text-white text-3xl transition-colors duration-200">
+            <a href="https://instagram.com/myclub" target="_blank" rel="noopener noreferrer" aria-label="Instagram" className="text-gray-400 hover:text-white text-3xl transition-colors duration-200">
               <FaInstagram />
             </a>
-            <a href="https://linkedin.com" target="_blank" rel="noopener noreferrer" className="text-gray-400 hover:text-white text-3xl transition-colors duration-200">
+            <a href="https://linkedin.com/company/myclub" target="_blank" rel="noopener noreferrer" aria-label="LinkedIn" className="text-gray-400 hover:text-white text-3xl transition-colors duration-200">
               <FaLinkedinIn />
             </a>
           </div>
         </div>
       </div>
       <div className="border-t border-gray-700 mt-8 pt-8 text-center text-gray-500 text-sm">
-        &copy; {new Date().getFullYear()} My Club. All rights reserved.
+        © {new Date().getFullYear()} My Club. All rights reserved.
       </div>
     </footer>
   );

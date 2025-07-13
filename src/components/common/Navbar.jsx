@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../contexts/AuthContext';
-import { toast } from './CustomToast'; // Make sure the path is correct
+import { toast } from './CustomToast';
 
 function Navbar() {
   const { user, isLoggedIn, logout } = useAuth();
@@ -20,24 +20,23 @@ function Navbar() {
     return () => {
       document.removeEventListener('mousedown', handleClickOutside);
     };
-  }, [dropdownRef]);
+  }, [dropdownRef]); // Dependency array should include dropdownRef
 
   const handleLogout = () => {
     logout();
     setDropdownOpen(false); // Close dropdown on logout
     navigate('/login'); // Redirect to login page after logout
-    toast.success('You have been logged out.');
   };
 
   const handleDashboardClick = () => {
     setDropdownOpen(false); // Close dropdown
-    // This will be replaced with actual dashboard routes later
+    // Determine the correct dashboard path based on user role
     if (user?.role === 'admin') {
-      navigate('/admin/dashboard'); // Placeholder for admin dashboard
+      navigate('/admin/dashboard/profile'); // Specific route within admin dashboard
     } else if (user?.role === 'member') {
-      navigate('/member/dashboard'); // Placeholder for member dashboard
-    } else { // default user role or regular user
-      navigate('/user/dashboard'); // Placeholder for user dashboard
+      navigate('/member/dashboard/profile'); // Specific route within member dashboard
+    } else { // 'user' role or default
+      navigate('/user/dashboard/profile'); // Specific route within user dashboard
     }
   };
 
@@ -46,7 +45,7 @@ function Navbar() {
       <div className="container mx-auto flex justify-between items-center flex-wrap">
         {/* Logo and Site Name */}
         <Link to="/" className="flex items-center text-white text-2xl font-bold tracking-wide">
-          <img src="https://via.placeholder.com/40" alt="Club Logo" className="h-10 w-10 rounded-full mr-3" />
+          <img src="https://via.placeholder.com/40/0000FF/FFFFFF?text=MC" alt="My Club Logo" className="h-10 w-10 rounded-full mr-3" />
           My Club
         </Link>
 
@@ -65,10 +64,11 @@ function Navbar() {
               <button
                 className="flex items-center space-x-2 focus:outline-none"
                 onClick={() => setDropdownOpen(!dropdownOpen)}
+                aria-label="User profile menu" // Added for accessibility
               >
                 <img
-                  src={user?.image || 'https://via.placeholder.com/150'} // Use user's image or a placeholder
-                  alt="Profile"
+                  src={user?.image || 'https://via.placeholder.com/150/CCCCCC/FFFFFF?text=User'} // Use user's image or a placeholder
+                  alt={`${user?.name || 'User'} Profile`} // Alt text for accessibility
                   className="w-10 h-10 rounded-full border-2 border-white object-cover"
                 />
               </button>

@@ -12,9 +12,9 @@ const api = axios.create({
 // Request Interceptor to add auth token
 api.interceptors.request.use(
   (config) => {
-    const token = localStorage.getItem('token'); // Get token from localStorage
+    const token = localStorage.getItem('token');
     if (token) {
-      config.headers.Authorization = `Bearer ${token}`; // Add to Authorization header
+      config.headers.Authorization = `Bearer ${token}`;
     }
     return config;
   },
@@ -23,19 +23,22 @@ api.interceptors.request.use(
   }
 );
 
-// Response Interceptor (example - for global error handling or token refresh)
+// Response Interceptor for global error handling or token refresh
 api.interceptors.response.use(
   (response) => {
     return response;
   },
   (error) => {
-    // Handle specific error codes, e.g., 401 for unauthorized
-    if (error.response && error.response.status === 401) {
-      // If 401, it means token is invalid or expired.
-      // You might want to automatically logout the user here.
-      // This would require access to the AuthContext, which is tricky in a pure Axios interceptor.
-      // A common pattern is to dispatch an event or use a global state manager.
-      // For now, the toast will inform the user.
+    // Check if the error is due to an expired or invalid token (401 Unauthorized)
+    // and if it's not a login attempt itself
+    if (error.response && error.response.status === 401 && !error.config.url.includes('/auth/login')) {
+      // Potentially dispatch a logout action here if you had Redux/Zustand
+      // For now, rely on AuthContext and manual logout from UI
+      // Or if you want immediate logout:
+      // localStorage.removeItem('user');
+      // localStorage.removeItem('token');
+      // window.location.href = '/login'; // Force redirect to login
+      // toast.error('Session expired. Please log in again.');
     }
     return Promise.reject(error);
   }

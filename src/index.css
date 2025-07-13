@@ -6,3 +6,15 @@
     right: 0;
     top: 10%;
 }
+.ReactModal__Overlay.ReactModal__Overlay--after-open.Overlay .ReactModal__Content {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    margin: auto;
+    width: 80%;
+    max-width: 600px;
+    height: auto;
+    max-height: 90vh;
+}

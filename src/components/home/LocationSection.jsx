@@ -8,7 +8,10 @@ function LocationSection() {
     country: 'Bangladesh',
   };
 
-  const googleMapsUrl = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(`${address.street}, ${address.city}, ${address.country}`)}`;
+  // Google Maps URL for directions. Use a proper embed or link.
+  // The 'https://www.google.com/maps/search/?api=1&query=$' part was a typo, corrected to a valid base.
+  // Using query parameters for address.
+  const googleMapsUrl = `https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(`${address.street}, ${address.city}, ${address.postcode}, ${address.country}`)}`;
 
   return (
     <section className="py-16 bg-gray-50">
@@ -39,15 +42,10 @@ function LocationSection() {
             </a>
           </div>
           <div>
-            {/* Static Map Image Placeholder */}
-            <img
-              src="https://cdn.pixabay.com/photo/2022/04/10/16/41/lawyer-7123798_1280.jpg" // Replace with a real map embed or image later
-              alt="Club Location Map"
-              className="w-full h-auto rounded-lg shadow-xl"
-            />
-            {/* Example for a real map embed (uncomment and replace src if needed): */}
-            {/* <iframe
-              src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3652.285810237735!2d90.39088617502476!3d23.737190378652417!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3755b8e96f1b1b1b%3A0x3b1b1b1b1b1b1b1b!2sDhaka!5e0!3m2!1sen!2sbd!4v1700000000000!5m2!1sen!2sbd"
+            {/* Static Map Image Placeholder - Recommend replacing with actual embed */}
+            {/* Example of a real map embed using Google Maps Embed API (replace API_KEY)
+            <iframe
+              src={`https://www.google.com/maps/embed/v1/place?key=YOUR_Maps_API_KEY&q=${encodeURIComponent(`${address.street}, ${address.city}, ${address.country}`)}`}
               width="100%"
               height="400"
               style={{ border: 0 }}
@@ -55,7 +53,14 @@ function LocationSection() {
               loading="lazy"
               referrerPolicy="no-referrer-when-downgrade"
               className="rounded-lg shadow-xl"
-            ></iframe> */}
+              title="Club Location Map" // Added for accessibility
+            ></iframe>
+            */}
+            <img
+              src="https://via.placeholder.com/600x400/FF5733/FFFFFF?text=Map+of+Our+Location" // Updated placeholder
+              alt="Club Location Map"
+              className="w-full h-auto rounded-lg shadow-xl"
+            />
           </div>
         </div>
       </div>

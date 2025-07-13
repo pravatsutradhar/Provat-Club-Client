@@ -1,25 +1,34 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { useMutation } from '@tanstack/react-query';
 import api from '../services/api';
-import { toast } from '../components/common/CustomToast'; // Import custom toast
+import { toast } from '../components/common/CustomToast';
 
 const AuthContext = createContext(null);
 
 export const AuthProvider = ({ children }) => {
     const [user, setUser] = useState(null);
     const [token, setToken] = useState(null);
-    const [loading, setLoading] = useState(true);
+    const [loading, setLoading] = useState(true); // Initial loading state for auth check
 
-    // Load user and token from localStorage on initial load
+    // Load user and token from localStorage on initial app load
     useEffect(() => {
         const storedUser = localStorage.getItem('user');
         const storedToken = localStorage.getItem('token');
+
         if (storedUser && storedToken) {
-            setUser(JSON.parse(storedUser));
-            setToken(storedToken);
+            try {
+                const parsedUser = JSON.parse(storedUser);
+                setUser(parsedUser);
+                setToken(storedToken);
+            } catch (error) {
+                // Handle cases where localStorage data might be corrupted
+                console.error("Error parsing user from localStorage:", error);
+                localStorage.removeItem('user');
+                localStorage.removeItem('token');
+            }
         }
-        setLoading(false);
-    }, []);
+        setLoading(false); // Authentication check is complete
+    }, []); // Run only once on mount
 
     // Mutation for user login
     const loginMutation = useMutation({
@@ -33,6 +42,7 @@ export const AuthProvider = ({ children }) => {
             localStorage.setItem('user', JSON.stringify(data.user));
             localStorage.setItem('token', data.token);
             toast.success(data.message || 'Logged in successfully!');
+            // No navigation here, component using hook will handle it
         },
         onError: (error) => {
             const errorMessage = error.response?.data?.message || 'Login failed. Please check your credentials.';
@@ -47,8 +57,12 @@ export const AuthProvider = ({ children }) => {
             return data;
         },
         onSuccess: (data) => {
-            // For registration, we typically just show success and redirect to login
             toast.success(data.message || 'Registration successful! Please log in.');
+            // Optionally, if you want to auto-login on registration:
+            // setUser(data.user);
+            // setToken(data.token);
+            // localStorage.setItem('user', JSON.stringify(data.user));
+            // localStorage.setItem('token', data.token);
         },
         onError: (error) => {
             const errorMessage = error.response?.data?.message || 'Registration failed. Please try again.';
@@ -68,13 +82,15 @@ export const AuthProvider = ({ children }) => {
     const value = {
         user,
         token,
-        loading,
+        loading, // Expose loading state
         isLoggedIn: !!user,
         login: loginMutation.mutate,
         register: registerMutation.mutate,
         logout,
         loginStatus: loginMutation.status,
         registerStatus: registerMutation.status,
+        // Add a function to set user directly (e.g., after admin role change)
+        setUser,
     };
 
     return (
