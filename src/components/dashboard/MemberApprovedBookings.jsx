@@ -1,7 +1,6 @@
 import React from 'react';
 import { useApprovedBookings, useCancelBookingForMember } from '../../hooks/useMemberDashboard';
 import { useNavigate } from 'react-router-dom';
-import { toast } from '../common/CustomToast';
 
 function MemberApprovedBookings() {
   const { data: approvedBookings, isLoading, isError, error } = useApprovedBookings();

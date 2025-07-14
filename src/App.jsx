@@ -70,7 +70,11 @@ function App() {
               <Route path="/register" element={<RegisterPage />} />
 
               {/* Payment Page Route */}
-              <Route path="/payment/:bookingId" element={<PrivateRoute allowedRoles={['member', 'admin']}><PaymentPage /></PrivateRoute>} />
+              {/* <Route path="/payment/:bookingId" element={<PrivateRoute allowedRoles={['member', 'admin']}><PaymentPage /></PrivateRoute>} /> */}
+
+              <Route element={<PrivateRoute allowedRoles={['member', 'admin']} />}>
+                <Route path="/payment/:bookingId" element={<PaymentPage />} />
+              </Route>
 
               {/* Protected Routes for Dashboards */}
               {/* User Dashboard */}

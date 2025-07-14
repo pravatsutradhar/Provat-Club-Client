@@ -1,14 +1,15 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
-import { useCouponValidation, useProcessPayment } from '../hooks/usePayments'; // Import new hooks
+import { useCouponValidation, useProcessPayment } from '../hooks/usePayments';
 import { toast } from '../components/common/CustomToast';
+import api from '../services/api';
 
 function PaymentPage() {
-  const { bookingId } = useParams(); // Get bookingId from URL
-  const { state } = useLocation(); // Get passed state (bookingData)
+  const { bookingId } = useParams();
+  const { state } = useLocation();
   const navigate = useNavigate();
-  const { user, isLoggedIn } = useAuth(); // Get user for email display
+  const { user, isLoggedIn } = useAuth();
 
   const [bookingDetails, setBookingDetails] = useState(state?.bookingData || null);
   const [couponCode, setCouponCode] = useState('');
@@ -16,24 +17,44 @@ function PaymentPage() {
   const [finalAmount, setFinalAmount] = useState(0);
   const [paymentMethod, setPaymentMethod] = useState('');
   const [transactionId, setTransactionId] = useState('');
+  const [fetchError, setFetchError] = useState('');
 
-  // TanStack Mutations
   const validateCouponMutation = useCouponValidation();
   const processPaymentMutation = useProcessPayment();
 
-  // Redirect if not logged in (though PrivateRoute should handle this)
-  // Or if no booking data is passed (e.g., direct URL access)
+  // Fallback fetch: যদি state না থাকে, তাহলে API থেকে ডেটা আনো
+  useEffect(() => {
+    if (!bookingDetails && bookingId) {
+      api.get(`/bookings/${bookingId}`)
+        .then(res => {
+          if (res.data && res.data.data) {
+            setBookingDetails(res.data.data);
+            setFinalAmount(res.data.data.totalPrice);
+            setFetchError('');
+          } else {
+            setFetchError('Booking not found.');
+            toast.error('Booking not found.');
+          }
+        })
+        .catch(() => {
+          setFetchError('Failed to fetch booking details.');
+          toast.error('Failed to fetch booking details.');
+          navigate('/member/dashboard/approved-bookings', { replace: true });
+        });
+    }
+  }, [bookingDetails, bookingId, navigate]);
+
+  // Redirect if not logged in or no booking details
   useEffect(() => {
     if (!isLoggedIn) {
       toast.error('Please log in to make a payment.');
       navigate('/login', { replace: true });
-    } else if (!bookingDetails) {
+    } else if (!bookingDetails && !bookingId) {
       toast.error('No booking details provided. Please select an approved booking from your dashboard.');
       navigate('/member/dashboard/approved-bookings', { replace: true });
     }
-  }, [isLoggedIn, bookingDetails, navigate]);
+  }, [isLoggedIn, bookingDetails, bookingId, navigate]);
 
-  // Set initial final amount based on booking details
   useEffect(() => {
     if (bookingDetails) {
       setFinalAmount(bookingDetails.totalPrice);
@@ -50,13 +71,12 @@ function PaymentPage() {
       const data = await validateCouponMutation.mutateAsync(couponCode);
       setDiscountPercentage(data.discountPercentage);
       // Recalculate final amount with discount
-      const calculatedDiscount = (bookingDetails.totalPrice * data.discountPercentage) / 100;
-      setFinalAmount(bookingDetails.totalPrice - calculatedDiscount);
+      const calculatedDiscount = (bookingDetails?.totalPrice * data.discountPercentage) / 100;
+      setFinalAmount(bookingDetails?.totalPrice - calculatedDiscount);
       toast.success(`Coupon "${data.code}" applied! ${data.discountPercentage}% off.`);
     } catch (error) {
-      // Error message is handled by useCouponValidation hook's onError
-      setDiscountPercentage(0); // Reset discount
-      setFinalAmount(bookingDetails.totalPrice); // Reset amount
+      setDiscountPercentage(0);
+      setFinalAmount(bookingDetails?.totalPrice || 0);
     }
   };
 
@@ -70,11 +90,10 @@ function PaymentPage() {
     }
 
     const paymentDetails = {
-      bookingId: bookingDetails._id,
+      bookingId: bookingDetails?._id,
       transactionId,
       paymentMethod,
-      couponCode: discountPercentage > 0 ? couponCode : null, // Only send if coupon was actually applied
-      // amount and finalAmount calculation is done on backend based on booking.totalPrice and coupon
+      couponCode: discountPercentage > 0 ? couponCode : null,
     };
 
     processPaymentMutation.mutate(paymentDetails);
@@ -83,17 +102,43 @@ function PaymentPage() {
   // Handle successful payment: redirect to confirmed bookings
   useEffect(() => {
     if (processPaymentMutation.status === 'success') {
-      // Give a small delay for toast to show before navigating
       setTimeout(() => {
         navigate('/member/dashboard/confirmed-bookings', { replace: true });
-      }, 1500); // 1.5 second delay
+      }, 1500);
     }
   }, [processPaymentMutation.status, navigate]);
 
-  if (!bookingDetails || !user) {
+  // Debug log
+  useEffect(() => {
+    console.log('bookingDetails:', bookingDetails);
+    if (fetchError) {
+      console.log('fetchError:', fetchError);
+    }
+  }, [bookingDetails, fetchError]);
+
+  if (fetchError) {
     return (
-      <div className="flex justify-center items-center h-[calc(100vh-150px)] text-xl font-semibold text-gray-700">
-        Loading payment details...
+      <div className="flex flex-col justify-center items-center h-[calc(100vh-150px)] text-xl font-semibold text-red-600">
+        {fetchError}
+        <pre className="text-xs text-gray-500 bg-gray-100 p-2 mt-4 rounded max-w-xl overflow-x-auto">{JSON.stringify({ bookingDetails, user, fetchError }, null, 2)}</pre>
+      </div>
+    );
+  }
+
+  if (!user) {
+    return (
+      <div className="flex flex-col justify-center items-center h-[calc(100vh-150px)] text-xl font-semibold text-yellow-700">
+        Please log in to continue.
+        <pre className="text-xs text-gray-500 bg-gray-100 p-2 mt-4 rounded max-w-xl overflow-x-auto">{JSON.stringify({ user, bookingDetails, fetchError }, null, 2)}</pre>
+      </div>
+    );
+  }
+
+  if (!bookingDetails) {
+    return (
+      <div className="flex flex-col justify-center items-center h-[calc(100vh-150px)] text-xl font-semibold text-yellow-700">
+        No booking details found for this payment.
+        <pre className="text-xs text-gray-500 bg-gray-100 p-2 mt-4 rounded max-w-xl overflow-x-auto">{JSON.stringify({ user, bookingDetails, fetchError }, null, 2)}</pre>
       </div>
     );
   }
@@ -110,19 +155,19 @@ function PaymentPage() {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
             <div>
               <label className="block text-gray-700 text-sm font-bold mb-2">Court Name</label>
-              <input type="text" value={bookingDetails.court?.name || 'N/A'} className="form-input" readOnly disabled />
+              <input type="text" value={bookingDetails?.court?.name || 'N/A'} className="form-input" readOnly disabled />
             </div>
             <div>
               <label className="block text-gray-700 text-sm font-bold mb-2">Court Type</label>
-              <input type="text" value={bookingDetails.court?.type || 'N/A'} className="form-input" readOnly disabled />
+              <input type="text" value={bookingDetails?.court?.type || 'N/A'} className="form-input" readOnly disabled />
             </div>
             <div>
               <label className="block text-gray-700 text-sm font-bold mb-2">Booking Date</label>
-              <input type="text" value={new Date(bookingDetails.bookingDate).toLocaleDateString()} className="form-input" readOnly disabled />
+              <input type="text" value={bookingDetails?.bookingDate ? new Date(bookingDetails.bookingDate).toLocaleDateString() : 'N/A'} className="form-input" readOnly disabled />
             </div>
             <div>
               <label className="block text-gray-700 text-sm font-bold mb-2">Selected Slots</label>
-              <input type="text" value={bookingDetails.selectedSlots.join(', ')} className="form-input" readOnly disabled />
+              <input type="text" value={bookingDetails?.selectedSlots?.join(', ') || 'N/A'} className="form-input" readOnly disabled />
             </div>
           </div>
 
@@ -193,7 +238,7 @@ function PaymentPage() {
           {/* Amount Display */}
           <div className="mb-8 text-right">
             {discountPercentage > 0 && (
-              <p className="text-xl text-gray-600 line-through">Original: ${bookingDetails.totalPrice.toFixed(2)}</p>
+              <p className="text-xl text-gray-600 line-through">Original: ${bookingDetails?.totalPrice?.toFixed(2) || '0.00'}</p>
             )}
             <h3 className="text-3xl font-bold text-green-700">
               Amount to Pay: ${finalAmount.toFixed(2)}
