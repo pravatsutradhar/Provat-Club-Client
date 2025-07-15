@@ -46,19 +46,29 @@ api.interceptors.response.use(
 
 export default api;
 
+// Direct Cloudinary upload (no backend needed)
 export async function uploadImage(file) {
   const formData = new FormData();
-  formData.append('image', file);
+  formData.append('file', file);
+  formData.append('upload_preset', 'club-app'); // <-- Use this preset name
+
   const response = await fetch(
-    `${API_BASE_URL}/api/upload-image`,
+    'https://api.cloudinary.com/v1_1/decngaljp/image/upload', // <-- Use this cloud name
     {
       method: 'POST',
       body: formData,
     }
   );
   if (!response.ok) {
-    throw new Error('Image upload failed');
+    let errorMsg = 'Image upload failed';
+    try {
+      const errData = await response.json();
+      if (errData && errData.error && errData.error.message) {
+        errorMsg = `Image upload failed: ${errData.error.message}`;
+      }
+    } catch (e) {}
+    throw new Error(errorMsg);
   }
   const data = await response.json();
-  return data.url;
+  return data.secure_url;
 }
