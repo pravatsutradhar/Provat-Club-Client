@@ -31,41 +31,43 @@ const CouponForm = ({ initialData = null, onClose, onSave }) => {
   };
 
   return (
-    <div className="bg-white p-6 rounded-lg shadow-md max-w-xl mx-auto my-4">
-      <h3 className="text-2xl font-bold text-gray-800 mb-4 border-b pb-2">{isEditing ? 'Edit Coupon' : 'Add New Coupon'}</h3>
-      <form onSubmit={handleSubmit} className="grid grid-cols-1 md:grid-cols-2 gap-4">
+    <div className="bg-gradient-to-br from-blue-50 via-white to-blue-100 p-8 rounded-3xl shadow-2xl max-w-2xl mx-auto my-8 border border-blue-200">
+      <h3 className="text-3xl font-extrabold text-blue-800 mb-6 border-b-2 border-blue-200 pb-3 text-center tracking-tight drop-shadow-lg">
+        {isEditing ? 'Edit Coupon' : 'Add New Coupon'}
+      </h3>
+      <form onSubmit={handleSubmit} className="grid grid-cols-1 md:grid-cols-2 gap-8">
         <div>
-          <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="couponCode">Code</label>
-          <input type="text" id="couponCode" className="form-input" value={code} onChange={(e) => setCode(e.target.value.toUpperCase())} required />
+          <label className="block text-blue-700 text-base font-semibold mb-2" htmlFor="couponCode">Code</label>
+          <input type="text" id="couponCode" className="form-input w-full rounded-xl border-2 border-blue-200 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition p-3 text-lg" value={code} onChange={(e) => setCode(e.target.value.toUpperCase())} required />
         </div>
         <div>
-          <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="discountPercentage">Discount (%)</label>
-          <input type="number" id="discountPercentage" className="form-input" value={discountPercentage} onChange={(e) => setDiscountPercentage(e.target.value)} required min="0" max="100" />
+          <label className="block text-blue-700 text-base font-semibold mb-2" htmlFor="discountPercentage">Discount (%)</label>
+          <input type="number" id="discountPercentage" className="form-input w-full rounded-xl border-2 border-blue-200 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition p-3 text-lg" value={discountPercentage} onChange={(e) => setDiscountPercentage(e.target.value)} required min="0" max="100" />
         </div>
         <div className="md:col-span-2">
-          <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="expirationDate">Expiration Date</label>
+          <label className="block text-blue-700 text-base font-semibold mb-2" htmlFor="expirationDate">Expiration Date</label>
           <DatePicker
             selected={expirationDate}
             onChange={(date) => setExpirationDate(date)}
             dateFormat="dd/MM/yyyy"
-            className="form-input w-full"
+            className="form-input w-full rounded-xl border-2 border-blue-200 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition p-3 text-lg"
             required
             id="expirationDate"
           />
         </div>
         <div>
-          <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="usageLimit">Usage Limit (optional)</label>
-          <input type="number" id="usageLimit" className="form-input" value={usageLimit} onChange={(e) => setUsageLimit(e.target.value)} min="0" placeholder="No limit if empty" />
+          <label className="block text-blue-700 text-base font-semibold mb-2" htmlFor="usageLimit">Usage Limit (optional)</label>
+          <input type="number" id="usageLimit" className="form-input w-full rounded-xl border-2 border-blue-200 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition p-3 text-lg" value={usageLimit} onChange={(e) => setUsageLimit(e.target.value)} min="0" placeholder="No limit if empty" />
         </div>
         <div className="flex items-center mt-2">
-          <input type="checkbox" id="isActive" className="form-checkbox h-5 w-5 text-blue-600 rounded" checked={isActive} onChange={(e) => setIsActive(e.target.checked)} />
-          <label htmlFor="isActive" className="ml-2 text-gray-700 text-sm font-bold">Is Active</label>
+          <input type="checkbox" id="isActive" className="form-checkbox h-5 w-5 text-blue-600 rounded focus:ring-blue-400" checked={isActive} onChange={(e) => setIsActive(e.target.checked)} />
+          <label htmlFor="isActive" className="ml-2 text-blue-700 text-base font-semibold">Is Active</label>
         </div>
-        <div className="md:col-span-2 flex justify-end space-x-3 mt-4">
-          <button type="button" onClick={onClose} className="bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4 rounded">
+        <div className="md:col-span-2 flex flex-col md:flex-row justify-end items-center space-y-3 md:space-y-0 md:space-x-4 mt-6">
+          <button type="button" onClick={onClose} className="bg-gray-200 hover:bg-gray-300 text-gray-800 font-bold py-2 px-6 rounded-xl shadow transition-all duration-200 text-lg">
             Cancel
           </button>
-          <button type="submit" className="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
+          <button type="submit" className="bg-gradient-to-r from-blue-600 to-blue-400 hover:from-blue-700 hover:to-blue-500 text-white font-bold py-2 px-8 rounded-xl shadow-lg transition-all duration-200 text-lg">
             {isEditing ? 'Update Coupon' : 'Add Coupon'}
           </button>
         </div>
