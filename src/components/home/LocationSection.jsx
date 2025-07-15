@@ -1,4 +1,5 @@
 import React from 'react';
+import { FaMapMarkerAlt, FaDirections } from 'react-icons/fa';
 
 function LocationSection() {
   const address = {
@@ -7,59 +8,45 @@ function LocationSection() {
     postcode: '1200',
     country: 'Bangladesh',
   };
-
-  // Google Maps URL for directions. Use a proper embed or link.
-  // The 'https://www.google.com/maps/search/?api=1&query=$' part was a typo, corrected to a valid base.
-  // Using query parameters for address.
   const googleMapsUrl = `https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(`${address.street}, ${address.city}, ${address.postcode}, ${address.country}`)}`;
 
   return (
-    <section className="py-16 bg-gray-50">
-      <div className="container mx-auto px-4 max-w-4xl">
-        <h2 className="text-4xl font-bold text-center text-gray-800 mb-10">Find Us</h2>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
-          <div className="text-lg text-gray-700">
-            <h3 className="text-2xl font-semibold text-gray-800 mb-4">Our Address</h3>
-            <p className="mb-2">
-              {address.street}
-            </p>
-            <p className="mb-2">
-              {address.city}, {address.postcode}
-            </p>
-            <p className="mb-6">
-              {address.country}
-            </p>
-            <p>
-              Feel free to visit us during our operating hours or contact us for any inquiries. We look forward to welcoming you to My Club!
-            </p>
-            <a
-              href={googleMapsUrl}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="mt-6 inline-block bg-blue-600 text-white px-6 py-3 rounded-lg shadow-md hover:bg-blue-700 transition duration-300"
-            >
-              Get Directions (Google Maps)
-            </a>
+    <section className="py-20 bg-gradient-to-br from-blue-50 via-white to-blue-100">
+      <div className="container mx-auto px-4 max-w-5xl">
+        <h2 className="text-5xl font-extrabold text-center text-blue-800 mb-12 tracking-tight drop-shadow-lg">
+          <FaMapMarkerAlt className="inline-block mr-3 text-blue-500" /> Find Us
+        </h2>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-16 items-center">
+          <div className="text-xl text-gray-800 space-y-4">
+            <h3 className="text-2xl font-bold text-blue-700 mb-2 flex items-center">
+              <FaMapMarkerAlt className="mr-2 text-blue-500" /> Our Address
+            </h3>
+            <div className="bg-white rounded-xl shadow-lg p-6 border-l-4 border-blue-400">
+              <p className="mb-1 font-semibold">{address.street}</p>
+              <p className="mb-1">{address.city}, {address.postcode}</p>
+              <p className="mb-3">{address.country}</p>
+              <p className="text-gray-600 text-base">Feel free to visit us during our operating hours or contact us for any inquiries. We look forward to welcoming you to <span className="font-semibold text-blue-600">My Club</span>!</p>
+              <a
+                href={googleMapsUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="mt-6 inline-flex items-center bg-gradient-to-r from-blue-600 to-blue-400 text-white px-6 py-3 rounded-full shadow-lg hover:scale-105 transition-transform duration-300 font-bold text-lg"
+              >
+                <FaDirections className="mr-2 text-white text-xl" /> Navigate with Google Maps
+              </a>
+            </div>
           </div>
-          <div>
-            {/* Static Map Image Placeholder - Recommend replacing with actual embed */}
-            {/* Example of a real map embed using Google Maps Embed API (replace API_KEY)
+          <div className="flex justify-center">
             <iframe
-              src={`https://www.google.com/maps/embed/v1/place?key=YOUR_Maps_API_KEY&q=${encodeURIComponent(`${address.street}, ${address.city}, ${address.country}`)}`}
+              src="https://www.google.com/maps?q=23.8103,90.4125&z=15&output=embed"
               width="100%"
               height="400"
-              style={{ border: 0 }}
+              style={{ border: 0, borderRadius: '1rem', boxShadow: '0 4px 24px rgba(0,0,0,0.08)' }}
               allowFullScreen=""
               loading="lazy"
               referrerPolicy="no-referrer-when-downgrade"
-              className="rounded-lg shadow-xl"
-              title="Club Location Map" // Added for accessibility
-            ></iframe>
-            */}
-            <img
-              src="https://via.placeholder.com/600x400/FF5733/FFFFFF?text=Map+of+Our+Location" // Updated placeholder
-              alt="Club Location Map"
-              className="w-full h-auto rounded-lg shadow-xl"
+              title="Club Location Map"
+              className="w-full h-[400px] rounded-2xl shadow-2xl border-4 border-blue-200 max-w-md"
             />
           </div>
         </div>
