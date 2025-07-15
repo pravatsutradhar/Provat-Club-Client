@@ -1,8 +1,23 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useUserProfile } from '../../hooks/useUserProfile';
+import ImageUpload from '../common/ImageUpload';
+import api from '../../services/api';
 
 function UserMyProfile() {
-  const { data: userProfile, isLoading, isError, error } = useUserProfile();
+  const { data: userProfile, isLoading, isError, error, refetch } = useUserProfile();
+  const [uploading, setUploading] = useState(false);
+
+  const handleImageUpload = async (url) => {
+    setUploading(true);
+    try {
+      await api.put('/users/profile', { image: url });
+      refetch();
+    } catch (err) {
+      alert('Failed to update profile image');
+    } finally {
+      setUploading(false);
+    }
+  };
 
   if (isLoading) {
     return <div className="text-center text-gray-600 text-lg py-10">Loading profile...</div>;
@@ -12,8 +27,8 @@ function UserMyProfile() {
     return <div className="text-center text-red-600 text-lg py-10">Error: {error.message || 'Failed to load profile.'}</div>;
   }
 
-  if (!userProfile) { // Should not happen if data is not loading and no error, but good check
-      return <div className="text-center text-gray-600 text-lg py-10">No user data available.</div>;
+  if (!userProfile) {
+    return <div className="text-center text-gray-600 text-lg py-10">No user data available.</div>;
   }
 
   return (
@@ -25,10 +40,11 @@ function UserMyProfile() {
           alt={`${userProfile.name} Profile`}
           className="w-32 h-32 rounded-full object-cover border-4 border-blue-500 shadow-md mb-4"
         />
+        <ImageUpload onUpload={handleImageUpload} />
+        {uploading && <p>Updating image...</p>}
         <h3 className="text-2xl font-semibold text-gray-900">{userProfile.name}</h3>
         <p className="text-gray-600">{userProfile.email}</p>
       </div>
-
       <div className="text-lg text-gray-700">
         <p className="mb-2"><span className="font-semibold">Role:</span> {userProfile.role.charAt(0).toUpperCase() + userProfile.role.slice(1)}</p>
         <p className="mb-2"><span className="font-semibold">Registration Date:</span> {new Date(userProfile.registrationDate).toLocaleDateString()}</p>

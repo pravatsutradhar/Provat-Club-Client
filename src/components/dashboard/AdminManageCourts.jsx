@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useCourts } from '../../hooks/useCourts'; // Re-use public courts hook
 import { useAddCourt, useUpdateCourt, useDeleteCourt } from '../../hooks/useAdminDashboard';
 import { toast } from '../common/CustomToast';
+import ImageUpload from '../common/ImageUpload';
 
 // Form for adding/editing a court
 const CourtForm = ({ initialData = null, onClose, onSave }) => {
@@ -29,6 +30,8 @@ const CourtForm = ({ initialData = null, onClose, onSave }) => {
     });
   };
 
+  const handleImageUpload = (url) => setImage(url);
+
   return (
     <div className="bg-white p-6 rounded-lg shadow-md max-w-xl mx-auto my-4">
       <h3 className="text-2xl font-bold text-gray-800 mb-4 border-b pb-2">{isEditing ? 'Edit Court' : 'Add New Court'}</h3>
@@ -45,8 +48,9 @@ const CourtForm = ({ initialData = null, onClose, onSave }) => {
           </select>
         </div>
         <div>
-          <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="image">Image URL</label>
-          <input type="url" id="image" className="form-input" value={image} onChange={(e) => setImage(e.target.value)} placeholder="https://example.com/image.jpg" />
+          <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="image">Court Image</label>
+          <ImageUpload onUpload={handleImageUpload} />
+          {image && <img src={image} alt="Court Preview" className="mt-2 w-24 h-24 object-cover rounded" />}
         </div>
         <div>
           <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="pricePerSession">Price Per Session</label>

@@ -45,3 +45,17 @@ api.interceptors.response.use(
 );
 
 export default api;
+
+export async function uploadImage(file) {
+  const formData = new FormData();
+  formData.append('image', file);
+  const response = await fetch('/api/upload-image', {
+    method: 'POST',
+    body: formData,
+  });
+  if (!response.ok) {
+    throw new Error('Image upload failed');
+  }
+  const data = await response.json();
+  return data.url;
+}
