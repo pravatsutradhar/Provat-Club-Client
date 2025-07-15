@@ -49,10 +49,13 @@ export default api;
 export async function uploadImage(file) {
   const formData = new FormData();
   formData.append('image', file);
-  const response = await fetch('/api/upload-image', {
-    method: 'POST',
-    body: formData,
-  });
+  const response = await fetch(
+    `${API_BASE_URL}/api/upload-image`,
+    {
+      method: 'POST',
+      body: formData,
+    }
+  );
   if (!response.ok) {
     throw new Error('Image upload failed');
   }
