@@ -1,7 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../contexts/AuthContext';
-import { toast } from './CustomToast';
 
 function Navbar() {
   const { user, isLoggedIn, logout } = useAuth();
@@ -45,8 +44,7 @@ function Navbar() {
       <div className="container mx-auto flex justify-between items-center flex-wrap">
         {/* Logo and Site Name */}
         <Link to="/" className="flex items-center text-white text-2xl font-bold tracking-wide">
-          <img src="https://via.placeholder.com/40/0000FF/FFFFFF?text=MC" alt="My Club Logo" className="h-10 w-10 rounded-full mr-3" />
-          My Club
+          Provat Club
         </Link>
 
         {/* Navigation Links */}

@@ -42,6 +42,9 @@ import AdminManageAnnouncements from './components/dashboard/AdminManageAnnounce
 // Payment Page
 import PaymentPage from './pages/PaymentPage';
 
+// 404 Page
+import NotFoundPage from './pages/NotFoundPage';
+
 
 const queryClient = new QueryClient();
 
@@ -117,6 +120,9 @@ function App() {
                   <Route path="announcements" element={<AnnouncementsList />} /> {/* Re-use general announcements list, distinct from admin management one */}
                 </Route>
               </Route>
+
+              {/* 404 Route */}
+              <Route path="*" element={<NotFoundPage />} />
             </Routes>
           </main>
           <Footer />
