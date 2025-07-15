@@ -1,16 +1,22 @@
 import React, { useState } from 'react';
 import { useUserProfile } from '../../hooks/useUserProfile';
+import { useAuth } from '../../contexts/AuthContext';
 import ImageUpload from '../common/ImageUpload';
 import api from '../../services/api';
 
 function UserMyProfile() {
   const { data: userProfile, isLoading, isError, error, refetch } = useUserProfile();
+  const { user, setUser } = useAuth();
   const [uploading, setUploading] = useState(false);
 
   const handleImageUpload = async (url) => {
     setUploading(true);
     try {
       await api.put('/users/profile', { image: url });
+      // Update AuthContext and localStorage
+      const updatedUser = { ...user, image: url };
+      setUser(updatedUser);
+      localStorage.setItem('user', JSON.stringify(updatedUser));
       refetch();
     } catch (err) {
       alert('Failed to update profile image');
