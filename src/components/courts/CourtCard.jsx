@@ -1,6 +1,10 @@
 import React from 'react';
 
 function CourtCard({ court, onBookNowClick }) { // Receive onBookNowClick prop
+  // Example: show a preview of available slots (first slot as a sample)
+  const slotPreview = court.availableSlots && court.availableSlots.length > 0
+    ? court.availableSlots[0]
+    : '09:00 AM - 10:00 AM'; // fallback
 
   const handleBookNow = () => {
     onBookNowClick(court); // Call the handler passed from CourtsPage, passing the court object
@@ -15,10 +19,13 @@ function CourtCard({ court, onBookNowClick }) { // Receive onBookNowClick prop
       />
       <div className="p-5 flex flex-col flex-grow">
         <h3 className="text-2xl font-bold text-gray-900 mb-2">{court.name}</h3>
-        <p className="text-gray-700 text-lg mb-3">
+        <p className="text-gray-700 text-lg mb-1">
           <span className="font-semibold">Type:</span> {court.type}
         </p>
-        <p className="text-green-600 text-xl font-bold mb-4 flex-grow">
+        <p className="text-gray-700 text-base mb-1">
+          <span className="font-semibold">Sample Slot:</span> {slotPreview}
+        </p>
+        <p className="text-green-600 text-xl font-bold mb-2 flex-grow">
           Price: ${court.pricePerSession.toFixed(2)}/session
         </p>
         <p className="text-gray-600 text-sm mb-4">

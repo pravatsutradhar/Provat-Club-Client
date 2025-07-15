@@ -187,6 +187,10 @@ function BookingModal({ isOpen, onRequestClose, court }) {
               {createBookingMutation.status === 'pending' ? 'Submitting...' : 'Confirm Booking'}
             </button>
           </div>
+          <p className="mt-4 text-center text-sm text-blue-700 font-medium">
+            Your booking will be <span className="font-bold">pending</span> until admin approval.<br />
+            You will become a member after approval.
+          </p>
         </form>
       </div>
     </Modal>

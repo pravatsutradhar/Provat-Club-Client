@@ -47,8 +47,7 @@ function CourtsPage() {
   // Unified function to open the booking modal
   const handleOpenBookingModal = (court) => {
     if (!isLoggedIn) {
-      toast.info('Please log in to book a court.');
-      navigate('/login');
+      navigate('/login'); // Only redirect, no toast
     } else {
       setSelectedCourtForBooking(court);
       setIsBookingModalOpen(true);
