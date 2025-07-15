@@ -23,7 +23,7 @@ function DashboardSidebar() {
   // Hamburger button for mobile
   const Hamburger = (
     <button
-      className="md:hidden fixed top-4 left-4 z-50 bg-gray-800 text-white p-2 rounded-lg shadow-lg focus:outline-none focus:ring-2 focus:ring-blue-400"
+      className="md:hidden absolute top-0 left-0 z-50 bg-gray-600 text-white p-3 shadow-lg focus:outline-none focus:ring-2 focus:ring-blue-400"
       onClick={() => setIsOpen((prev) => !prev)}
       aria-label={isOpen ? 'Close sidebar' : 'Open sidebar'}
     >
@@ -38,7 +38,7 @@ function DashboardSidebar() {
   );
 
   return (
-    <>
+    <div className='bg-gradient-to-br relative from-blue-50 via-white to-blue-100'>
       {Hamburger}
       {/* Sidebar overlay for mobile */}
       <div
@@ -255,7 +255,7 @@ function DashboardSidebar() {
           </ul>
         </nav>
       </div>
-    </>
+    </div>
   );
 }
 
