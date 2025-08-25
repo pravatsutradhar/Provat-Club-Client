@@ -48,10 +48,11 @@ function AdminProfile() {
         />
         <ImageUpload onUpload={handleImageUpload} />
         {uploading && <p>Updating image...</p>}
-        <h3 className="text-2xl font-semibold text-gray-900">{userProfile.name}</h3>
-        <p className="text-gray-600">{userProfile.email}</p>
+        
       </div>
       <div className="text-lg text-gray-700">
+        <h3 className="text-2xl font-semibold text-gray-900">{userProfile.name}</h3>
+        <p className="text-gray-600 mb-4">{userProfile.email}</p>
         <p className="mb-2"><span className="font-semibold">Role:</span> <span className="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-red-100 text-red-800">Administrator</span></p>
         <p className="mb-2"><span className="font-semibold">Registration Date:</span> {new Date(userProfile.registrationDate).toLocaleDateString()}</p>
       </div>

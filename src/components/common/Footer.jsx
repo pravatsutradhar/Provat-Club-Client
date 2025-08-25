@@ -1,6 +1,6 @@
 import React from 'react';
-import { Link } from 'react-router-dom';
 import { FaFacebookF, FaTwitter, FaInstagram, FaLinkedinIn } from 'react-icons/fa';
+import { Link } from 'react-router-dom';
 
 function Footer() {
   return (
@@ -19,9 +19,9 @@ function Footer() {
         <div className="mb-6 md:mb-0">
           <h3 className="text-xl font-bold text-white mb-4">Quick Links</h3>
           <ul className="space-y-2">
-            <li><link to='/'  className="hover:text-white transition-colors duration-200 text-lg">Home</link></li>
-            <li><link to='/courts' className="hover:text-white transition-colors duration-200 text-lg">Courts</link></li>
-            <li><link to='/login' className="hover:text-white transition-colors duration-200 text-lg">Login</link></li>
+            <li><Link to='/' href="/" className="hover:text-white transition-colors duration-200 text-lg">Home</Link></li>
+            <li><Link to='/courts' href="/courts" className="hover:text-white transition-colors duration-200 text-lg">Courts</Link></li>
+            <li><Link to='/login' href="/login" className="hover:text-white transition-colors duration-200 text-lg">Login</Link></li>
             {/* Add more links as pages are built */}
           </ul>
         </div>

@@ -38,7 +38,7 @@ function UserDashboard() {
   // If the user's role is 'user' and they are on a valid path within /user/dashboard/*
   // (or if higher roles are implicitly allowed here before specific dashboard routes are implemented)
   return (
-    <div className="flex flex-col md:flex-row min-h-[calc(100vh-80px)]"> {/* Adjust min-h based on Navbar height */}
+    <div className="flex min-h-[calc(100vh-80px)]"> {/* Adjust min-h based on Navbar height */}
       <DashboardSidebar />
       <div className="flex-grow p-6 bg-gray-100 overflow-auto">
         <Outlet /> {/* Renders the nested route component (MyProfile, PendingBookings, etc.) */}

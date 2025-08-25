@@ -23,8 +23,8 @@ const ImageUpload = ({ onUpload }) => {
   };
 
   return (
-    <div>
-      <input type="file" accept="image/*" onChange={handleFileChange} />
+    <div className="image-upload">
+      <input className='text-center text-sm w-full' type="file" accept="image/*" onChange={handleFileChange} />
       {loading && <p>Uploading...</p>}
       {error && <p style={{ color: 'red' }}>{error}</p>}
       {preview && <img src={preview} alt="Preview" style={{ maxWidth: 200, marginTop: 8 }} />}

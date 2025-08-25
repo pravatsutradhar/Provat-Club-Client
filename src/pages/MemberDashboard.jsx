@@ -34,7 +34,7 @@ function MemberDashboard() {
   }, [loading, isLoggedIn, user, location.pathname, navigate]);
 
   return (
-    <div className="flex flex-col md:flex-row min-h-[calc(100vh-80px)]">
+    <div className="flex min-h-[calc(100vh-80px)]">
       <DashboardSidebar />
       <div className="flex-grow p-6 bg-gray-100 overflow-auto">
         <Outlet /> {/* Renders the nested route component */}
